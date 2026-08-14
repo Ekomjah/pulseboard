@@ -3,7 +3,7 @@ const cors = require("cors");
 const rateLimit = require("express-rate-limit");
 const authRoutes = require("./routes/auth");
 const updatesRoutes = require("./routes/updates");
-const usersRoutes = require("./routes/user")
+const usersRoutes = require("./routes/user");
 
 function createApp() {
   const app = express();

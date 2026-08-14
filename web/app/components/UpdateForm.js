@@ -66,7 +66,7 @@ export default function UpdateForm({ auth, onPosted }) {
     const NETWORK_ERROR_MESSAGES = ["networkerror", "failed to fetch"]; // checks against errors displayed by Firefox and Chrome/Opera
     const lowerCaseMsg = error.message.toLowerCase();
     return NETWORK_ERROR_MESSAGES.some((exampleError) =>
-      lowerCaseMsg.includes(exampleError),
+      lowerCaseMsg.includes(exampleError)
     );
   }
 
@@ -78,7 +78,7 @@ export default function UpdateForm({ auth, onPosted }) {
           status: queuedMessage.status,
           tags: queuedMessage.tags,
         },
-        auth.token,
+        auth.token
       );
       modifyQueue(queuedMessage);
       onPosted(update);
@@ -190,6 +190,3 @@ export default function UpdateForm({ auth, onPosted }) {
     </form>
   );
 }
-
-
-

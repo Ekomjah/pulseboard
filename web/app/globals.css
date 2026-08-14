@@ -1,511 +1,571 @@
 :root {
-    --page-bg: #f6f7fb;
-    --text-primary: #1a1a2e;
-    --text-secondary: #555;
-    --text-hint: #666;
-    --surface-bg: white;
-    --surface-border: #e0e0e8;
-    --control-border: #ccc;
-    --primary-button-bg: #4b5efc;
-    --primary-button-text: white;
-    --status-on-track-bg: #2e7d32;
-    --status-blocked-bg: #c62828;
-    --error-text: #c62828;
-    --status-done-bg: #1565c0;
-    --status-text: white;
-    --reaction-count-bg: #eef0fb;
-    --spinner-track: rgba(255, 255, 255, 0.35);
-    --spinner-highlight: white;
-    --reaction-button-bg: white;
-    --control-bg: white;
-    --control-text: #1a1a2e;
-    --placeholder-text: #666;
-    --reaction-count-text: #555;
-    --reaction-button-text: #1a1a2e;
-    --focus-indicator: #4b5efc;
-    --streak-text: #c2410c;
-    --streak-bg: rgba(249, 115, 22, 0.14);
+  --page-bg: #f6f7fb;
+  --text-primary: #1a1a2e;
+  --text-secondary: #555;
+  --text-hint: #666;
+  --surface-bg: white;
+  --surface-border: #e0e0e8;
+  --control-border: #ccc;
+  --primary-button-bg: #4b5efc;
+  --primary-button-text: white;
+  --status-on-track-bg: #2e7d32;
+  --status-blocked-bg: #c62828;
+  --error-text: #c62828;
+  --status-done-bg: #1565c0;
+  --status-text: white;
+  --reaction-count-bg: #eef0fb;
+  --reaction-active-bg: #eef2ff;
+  --reaction-active-border: #6366f1;
+  --spinner-track: rgba(255, 255, 255, 0.35);
+  --spinner-highlight: white;
+  --reaction-button-bg: white;
+  --control-bg: white;
+  --control-text: #1a1a2e;
+  --placeholder-text: #666;
+  --reaction-count-text: #555;
+  --reaction-button-text: #1a1a2e;
+  --focus-indicator: #4b5efc;
+  --streak-text: #c2410c;
+  --streak-bg: rgba(249, 115, 22, 0.14);
 }
 
 :root[data-theme="dark"] {
-    --page-bg: #1d2145;
-    --text-primary: #f7f7ff;
-    --text-secondary: #cfd2e6;
-    --text-hint: #b8bdd8;
-    --surface-bg: #292e55;
-    --surface-border: #747ba8;
-    --control-border: #747ba8;
-    --primary-button-bg: #b7c0ff;
-    --primary-button-text: #171a33;
-    --status-on-track-bg: #9bdcb0;
-    --status-blocked-bg: #ffabb4;
-    --status-done-bg: #a9c7ff;
-    --status-text: #171a33;
-    --error-text: #ffc2c8;
-    --reaction-count-bg: #3d4475;
-    --reaction-button-bg: #1f2343;
-    --spinner-track: rgba(23, 26, 51, 0.3);
-    --spinner-highlight: #171a33;
-    --control-bg: #1f2343;
-    --control-text: #f7f7ff;
-    --placeholder-text: #b8bdd8;
-    --reaction-count-text: #f7f7ff;
-    --reaction-button-text: #f7f7ff;
-    --focus-indicator: #cbd0ff;
-    --streak-text: #fdba74;
-    --streak-bg: rgba(251, 146, 60, 0.16);
+  --page-bg: #1a1a1a;
+  --text-primary: #ededed;
+  --text-secondary: #b5b5b5;
+  --text-hint: #9b9b9b;
+  --surface-bg: #242424;
+  --surface-border: #3a3a3a;
+  --control-border: #3d3d3d;
+  --primary-button-bg: #8b93ff;
+  --primary-button-text: #14141a;
+  --status-on-track-bg: #a5dcb3;
+  --status-blocked-bg: #ffb3b8;
+  --status-done-bg: #a8c6ff;
+  --status-text: #10141a;
+  --error-text: #ff9b9b;
+  --reaction-count-bg: #333333;
+  --reaction-button-bg: #202020;
+  --reaction-active-bg: #2c3050;
+  --reaction-active-border: #8b93ff;
+  --spinner-track: rgba(20, 20, 26, 0.18);
+  --spinner-highlight: #14141a;
+  --control-bg: #202020;
+  --control-text: #ececec;
+  --placeholder-text: #969696;
+  --reaction-count-text: #cfcfcf;
+  --reaction-button-text: #ececec;
+  --focus-indicator: #a5adff;
+  --streak-text: #ffb054;
+  --streak-bg: rgba(255, 176, 84, 0.16);
 }
 
 * {
-    box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 body {
-    margin: 0;
-    font-family:
-        -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    background: var(--page-bg);
-    color: var(--text-primary);
+  margin: 0;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: var(--page-bg);
+  color: var(--text-primary);
 }
 
 .container {
-    max-width: 640px;
-    margin: 0 auto;
-    padding: 2rem 1rem 4rem;
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 2rem 1rem 4rem;
 }
 
 h1 {
-    margin-bottom: 0.25rem;
+  margin-bottom: 0;
 }
 
 .tagline {
-    color: var(--text-secondary);
-    margin-top: 0;
+  color: var(--text-secondary);
+  margin-top: 0;
+}
+
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.app-header h1 {
+  margin: 0;
 }
 
 .theme-toggle {
-    display: block;
-    margin: 0 0 1rem auto;
-    padding: 0.4rem 0.75rem;
-    border: 1px solid var(--control-border);
-    border-radius: 999px;
-    background: var(--control-bg);
-    color: var(--control-text);
-    cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+}
+
+.theme-toggle input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.theme-toggle-track {
+  position: relative;
+  flex-shrink: 0;
+  width: 40px;
+  height: 22px;
+  border-radius: 999px;
+  background: var(--control-border);
+  transition: background 0.2s ease;
+}
+
+.theme-toggle-track::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  transition: transform 0.2s ease;
+}
+
+.theme-toggle input:checked + .theme-toggle-track {
+  background: var(--primary-button-bg);
+}
+
+.theme-toggle input:checked + .theme-toggle-track::after {
+  transform: translateX(18px);
+}
+
+.theme-toggle input:focus-visible + .theme-toggle-track {
+  outline: 2px solid var(--focus-indicator);
+  outline-offset: 3px;
 }
 
 section {
-    margin-top: 2rem;
+  margin-top: 2rem;
 }
 
 .auth-panel {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    align-items: center;
-    background: var(--surface-bg);
-    border: 1px solid var(--surface-border);
-    border-radius: 8px;
-    padding: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  background: var(--surface-bg);
+  border: 1px solid var(--surface-border);
+  border-radius: 8px;
+  padding: 1rem;
 }
 
 .auth-tabs {
-    display: flex;
-    gap: 0.5rem;
-    width: 100%;
+  display: flex;
+  gap: 0.5rem;
+  width: 100%;
 }
 
 .auth-tabs button.active {
-    font-weight: bold;
-    text-decoration: underline;
+  font-weight: bold;
+  text-decoration: underline;
 }
 
 .auth-panel input {
-    padding: 0.5rem;
-    border: 1px solid var(--control-border);
-    border-radius: 4px;
-    flex: 1;
-    min-width: 140px;
-    background: var(--control-bg);
-    color: var(--control-text);
+  padding: 0.5rem;
+  border: 1px solid var(--control-border);
+  border-radius: 4px;
+  flex: 1;
+  min-width: 140px;
+  background: var(--control-bg);
+  color: var(--control-text);
 }
 
 .auth-panel button {
-    padding: 0.5rem 1rem;
-    border: none;
-    border-radius: 4px;
-    background: var(--primary-button-bg);
-    color: var(--primary-button-text);
-    cursor: pointer;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  background: var(--primary-button-bg);
+  color: var(--primary-button-text);
+  cursor: pointer;
 }
 
 .update-form {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    background: var(--surface-bg);
-    border: 1px solid var(--surface-border);
-    border-radius: 8px;
-    padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  background: var(--surface-bg);
+  border: 1px solid var(--surface-border);
+  border-radius: 8px;
+  padding: 1rem;
 }
 
 .update-form textarea {
-    min-height: 80px;
-    padding: 0.5rem;
-    border: 1px solid var(--control-border);
-    border-radius: 4px;
-    font-family: inherit;
-    resize: vertical;
-    background: var(--control-bg);
-    color: var(--control-text);
+  min-height: 80px;
+  padding: 0.5rem;
+  border: 1px solid var(--control-border);
+  border-radius: 4px;
+  font-family: inherit;
+  resize: vertical;
+  background: var(--control-bg);
+  color: var(--control-text);
 }
 
 .auth-panel input::placeholder,
 .update-form textarea::placeholder {
-    color: var(--placeholder-text);
+  color: var(--placeholder-text);
 }
 
 .tags-input-container {
-    display: flex;
-    gap: 0.4rem;
-    align-items: center;
-    flex-wrap: wrap;
-    min-height: 40px;
-    padding: 0.5rem;
-    border: 1px solid var(--control-border);
-    border-radius: 4px;
-    font-family: inherit;
-    resize: vertical;
-    background: var(--control-bg);
-    color: var(--control-text);
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+  flex-wrap: wrap;
+  min-height: 40px;
+  padding: 0.5rem;
+  border: 1px solid var(--control-border);
+  border-radius: 4px;
+  font-family: inherit;
+  resize: vertical;
+  background: var(--control-bg);
+  color: var(--control-text);
 }
 
 .tags-pill {
-    display: flex;
-    gap: 6px;
-    align-items: center;
-    border-radius: 999px;
-    padding: 0.15rem 0.58rem;
-    background: var(--reaction-count-bg);
-    color: var(--reaction-count-text);
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  border-radius: 999px;
+  padding: 0.15rem 0.58rem;
+  background: var(--reaction-count-bg);
+  color: var(--reaction-count-text);
 }
 
 .tag-name {
-    transform: translateY(-2px);
+  transform: translateY(-2px);
 }
 
 .remove-tag {
-    cursor: pointer;
-    transform: translateY(-2px);
+  cursor: pointer;
+  transform: translateY(-2px);
 }
 
 .tag-input {
-    border: none;
-    outline: none;
-    flex-grow: 1;
-    padding: 0.5rem 0.5rem;
-    background: var(--reaction-button-bg);
-    color: var(--reaction-button-text);
+  border: none;
+  outline: none;
+  flex-grow: 1;
+  padding: 0.5rem 0.5rem;
+  background: var(--reaction-button-bg);
+  color: var(--reaction-button-text);
 }
 
 .update-form label {
-    display: flex;
-    justify-content: right;
-    opacity: 60%;
-    font-size: 0.5em;
+  display: flex;
+  justify-content: right;
+  opacity: 60%;
+  font-size: 0.5em;
 }
 
 .update-form-row {
-    display: flex;
-    gap: 0.5rem;
+  display: flex;
+  gap: 0.5rem;
 }
 
 .update-form select {
-    padding: 0.5rem;
-    border-radius: 4px;
-    border: 1px solid var(--control-border);
-    background: var(--control-bg);
-    color: var(--control-text);
+  padding: 0.5rem;
+  border-radius: 4px;
+  border: 1px solid var(--control-border);
+  background: var(--control-bg);
+  color: var(--control-text);
 }
 
 .update-form button {
-    padding: 0.5rem 1rem;
-    border: none;
-    border-radius: 4px;
-    background: var(--primary-button-bg);
-    color: var(--primary-button-text);
-    cursor: pointer;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  background: var(--primary-button-bg);
+  color: var(--primary-button-text);
+  cursor: pointer;
 }
 
 .filter-bar {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-    padding: 0.75rem;
-    margin-bottom: 1rem;
-    background: var(--surface-bg);
-    border: 1px solid var(--surface-border);
-    border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  background: var(--surface-bg);
+  border: 1px solid var(--surface-border);
+  border-radius: 12px;
 }
 
 .filter-row {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .filter-row + .filter-row {
-    border-top: 1px solid var(--surface-border);
-    padding-top: 0.75rem;
+  border-top: 1px solid var(--surface-border);
+  padding-top: 0.75rem;
 }
 
 .filter-row select {
-    flex: 1 1 140px;
-    min-width: 0;
-    height: 36px;
-    padding: 0 0.6rem;
-    border-radius: 8px;
-    border: 1px solid var(--control-border);
-    background: var(--control-bg);
-    color: var(--control-text);
-    font-family: inherit;
-    font-size: 0.85rem;
+  flex: 1 1 140px;
+  min-width: 0;
+  height: 36px;
+  padding: 0 0.6rem;
+  border-radius: 8px;
+  border: 1px solid var(--control-border);
+  background: var(--control-bg);
+  color: var(--control-text);
+  font-family: inherit;
+  font-size: 0.85rem;
 }
 
 .segmented {
-    display: inline-flex;
-    padding: 0.2rem;
-    gap: 0.15rem;
-    border: 1px solid var(--control-border);
-    border-radius: 9px;
-    background: var(--control-bg);
+  display: inline-flex;
+  padding: 0.2rem;
+  gap: 0.15rem;
+  border: 1px solid var(--control-border);
+  border-radius: 9px;
+  background: var(--control-bg);
 }
 
 .seg-btn {
-    padding: 0.35rem 0.75rem;
-    border: none;
-    border-radius: 6px;
-    background: transparent;
-    color: var(--control-text);
-    font-family: inherit;
-    font-size: 0.8rem;
-    font-weight: 500;
-    white-space: nowrap;
-    cursor: pointer;
+  padding: 0.35rem 0.75rem;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--control-text);
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
 }
 
 .seg-btn:hover {
-    background: var(--reaction-count-bg);
+  background: var(--reaction-count-bg);
 }
 
 .seg-btn.active {
-    background: var(--primary-button-bg);
-    color: var(--primary-button-text);
+  background: var(--primary-button-bg);
+  color: var(--primary-button-text);
 }
 
 .filter-checkbox {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.45rem;
-    margin-left: auto;
-    font-size: 0.85rem;
-    color: var(--control-text);
-    white-space: nowrap;
-    cursor: pointer;
-    user-select: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-left: auto;
+  font-size: 0.85rem;
+  color: var(--control-text);
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
 }
 
 .filter-checkbox input {
-    flex-shrink: 0;
-    width: 16px;
-    height: 16px;
-    margin: 0;
-    accent-color: var(--primary-button-bg);
-    cursor: pointer;
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  accent-color: var(--primary-button-bg);
+  cursor: pointer;
 }
 
 .update-list {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 .update-card {
-    position: relative;
-    overflow: hidden;
-    background: var(--surface-bg);
-    border: 1px solid var(--surface-border);
-    border-radius: 12px;
-    padding: 1.25rem 1.25rem 1.25rem 1.5rem;
+  position: relative;
+  overflow: hidden;
+  background: var(--surface-bg);
+  border: 1px solid var(--surface-border);
+  border-radius: 12px;
+  padding: 1.25rem 1.25rem 1.25rem 1.5rem;
 }
 
 .update-card::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    width: 6px;
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 6px;
 }
 
 .update-card.status-on-track::before {
-    background: var(--status-on-track-bg);
+  background: var(--status-on-track-bg);
 }
 
 .update-card.status-blocked::before {
-    background: var(--status-blocked-bg);
+  background: var(--status-blocked-bg);
 }
 
 .update-card.status-done::before {
-    background: var(--status-done-bg);
+  background: var(--status-done-bg);
 }
 
 .update-card header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 0.75rem;
-    margin-bottom: 0.85rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin-bottom: 0.85rem;
 }
 
 .poster {
-    display: flex;
-    align-items: center;
-    gap: 0.65rem;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
 }
 
 .avatar {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 44px;
-    height: 44px;
-    flex-shrink: 0;
-    border-radius: 50%;
-    border: 1px solid var(--surface-border);
-    color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  border: 1px solid var(--surface-border);
+  color: var(--text-secondary);
 }
 
 .update-meta {
-    display: flex;
-    flex-direction: column;
-    gap: 0.1rem;
-    flex: 1; /* still needed — .update-meta must claim space in .poster */
-    min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  flex: 1; /* still needed — .update-meta must claim space in .poster */
+  min-width: 0;
 }
 
 .update-meta time {
-    font-size: 0.75rem;
-    color: var(--text-secondary);
+  font-size: 0.75rem;
+  color: var(--text-secondary);
 }
 
 .author {
-    display: grid;
-    grid-template-columns: 1fr auto; /* name | flexible gap | streak */
-    align-items: baseline;
-    font-weight: bold;
-    font-size: 1rem;
+  display: grid;
+  grid-template-columns: 1fr auto; /* name | flexible gap | streak */
+  align-items: baseline;
+  font-weight: bold;
+  font-size: 1rem;
 }
 
 .streak {
-    display: inline-flex;
-    align-items: center;
-    align-self: center;
-    gap: 0.25rem;
-    padding: 0.15rem 0.5rem 0.15rem 0.3rem;
-    border-radius: 999px;
-    font-size: 0.75rem;
-    font-weight: 700;
-    line-height: 1;
-    color: var(--streak-text);
-    background: var(--streak-bg);
-    white-space: nowrap;
-    margin-left: 1rem;
+  display: inline-flex;
+  align-items: center;
+  align-self: center;
+  gap: 0.25rem;
+  padding: 0.15rem 0.5rem 0.15rem 0.3rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--streak-text);
+  background: var(--streak-bg);
+  white-space: nowrap;
+  margin-left: 1rem;
 }
 
 .streak svg {
-    flex-shrink: 0;
-    color: var(--streak-text);
+  flex-shrink: 0;
+  color: var(--streak-text);
 }
 
 .status-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.3rem;
-    font-size: 0.8rem;
-    font-weight: 700;
-    padding: 0.35rem 0.75rem;
-    border-radius: 999px;
-    white-space: nowrap;
-    color: var(--status-text);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  white-space: nowrap;
+  color: var(--status-text);
 }
 
 .status-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .status-icon svg {
-    display: block;
+  display: block;
 }
 
 .status-badge.status-on-track {
-    background: var(--status-on-track-bg);
+  background: var(--status-on-track-bg);
 }
 
 .status-badge.status-blocked {
-    background: var(--status-blocked-bg);
+  background: var(--status-blocked-bg);
 }
 
 .status-badge.status-done {
-    background: var(--status-done-bg);
+  background: var(--status-done-bg);
 }
 
 .update-text {
-    white-space: pre-wrap;
-    margin: 0.5rem 0 1rem;
-    line-height: 1.5;
-    color: var(--text-primary);
+  white-space: pre-wrap;
+  margin: 0.5rem 0 1rem;
+  line-height: 1.5;
+  color: var(--text-primary);
 }
 
 .update-card footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 0.8rem;
-    color: var(--text-secondary);
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-top: 0.85rem;
-    padding-top: 0.85rem;
-    border-top: 1px solid var(--surface-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.85rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--surface-border);
 }
 
 .reactions {
-    display: flex;
-    gap: 0.4rem;
-    align-items: center;
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
 }
 
 .reaction-count {
-    background: var(--reaction-count-bg);
-    padding: 0.15rem 0.5rem;
-    border-radius: 999px;
-    color: var(--reaction-count-text);
+  background: var(--reaction-count-bg);
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  color: var(--reaction-count-text);
 }
 
 .reaction-button {
-    border: 1px solid var(--control-border);
-    background: var(--reaction-button-bg);
-    border-radius: 999px;
-    padding: 0.1rem 0.5rem;
-    cursor: pointer;
-    color: var(--reaction-button-text);
+  border: 1px solid var(--control-border);
+  background: var(--reaction-button-bg);
+  border-radius: 999px;
+  padding: 0.1rem 0.5rem;
+  cursor: pointer;
+  color: var(--reaction-button-text);
 }
 
-.theme-toggle:focus-visible,
 .auth-panel input:focus-visible,
 .auth-panel button:focus-visible,
 .update-form textarea:focus-visible,
@@ -521,167 +581,167 @@ section {
 .delete-btn:focus-visible,
 .save-btn:focus-visible,
 .cancel-btn:focus-visible {
-    outline: 2px solid var(--focus-indicator);
-    outline-offset: 2px;
+  outline: 2px solid var(--focus-indicator);
+  outline-offset: 2px;
 }
 
 .update-actions {
-    display: flex;
-    gap: 6px;
-    align-items: center;
+  display: flex;
+  gap: 6px;
+  align-items: center;
 }
 
 .reactions {
-    flex-wrap: wrap;
+  flex-wrap: wrap;
 }
 
 .hint {
-    color: var(--text-hint);
-    font-style: italic;
+  color: var(--text-hint);
+  font-style: italic;
 }
 
 .error {
-    color: var(--error-text);
-    font-size: 0.9rem;
+  color: var(--error-text);
+  font-size: 0.9rem;
 }
 
 /* Loading spinner for UpdateForm */
 .spinner {
-    width: 14px;
-    height: 14px;
-    border: 2px solid var(--spinner-track);
-    border-top-color: var(--spinner-highlight);
-    border-radius: 50%;
-    display: inline-block;
-    animation: spin 0.8s linear infinite;
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--spinner-track);
+  border-top-color: var(--spinner-highlight);
+  border-radius: 50%;
+  display: inline-block;
+  animation: spin 0.8s linear infinite;
 }
 
 @keyframes spin {
-    to {
-        transform: rotate(360deg);
-    }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* Keep button content aligned */
 .update-form-row button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.4rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
 }
 
 /* Edit UI */
 .edit-field {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-    align-items: flex-end;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  align-items: flex-end;
 }
 
 .edit-field label,
 .edit-form label {
-    font-size: 0.75rem;
-    color: var(--text-secondary);
+  font-size: 0.75rem;
+  color: var(--text-secondary);
 }
 
 .edit-field select {
-    padding: 0.5rem;
-    border: 1px solid var(--control-border);
-    border-radius: 4px;
-    background: var(--control-bg);
-    color: var(--control-text);
+  padding: 0.5rem;
+  border: 1px solid var(--control-border);
+  border-radius: 4px;
+  background: var(--control-bg);
+  color: var(--control-text);
 }
 
 .edit-form {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-    margin: 0.5rem 0 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin: 0.5rem 0 1rem;
 }
 
 .edit-form textarea {
-    min-height: 80px;
-    padding: 0.5rem;
-    border: 1px solid var(--control-border);
-    border-radius: 4px;
-    font-family: inherit;
-    resize: vertical;
-    background: var(--control-bg);
-    color: var(--control-text);
+  min-height: 80px;
+  padding: 0.5rem;
+  border: 1px solid var(--control-border);
+  border-radius: 4px;
+  font-family: inherit;
+  resize: vertical;
+  background: var(--control-bg);
+  color: var(--control-text);
 }
 
 .edit-actions {
-    display: flex;
-    gap: 0.5rem;
-    align-items: center;
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
 }
 
 .edit-btn,
 .delete-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 32px;
-    height: 32px;
-    padding: 0;
-    border-radius: 8px;
-    cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border-radius: 8px;
+  cursor: pointer;
 }
 
 .edit-btn {
-    border: 1px solid var(--control-border);
-    background: var(--control-bg);
-    color: var(--control-text);
+  border: 1px solid var(--control-border);
+  background: var(--control-bg);
+  color: var(--control-text);
 }
 
 .edit-btn:hover {
-    background: var(--reaction-count-bg);
+  background: var(--reaction-count-bg);
 }
 
 .delete-btn {
-    border: none;
-    background: var(--status-blocked-bg);
-    color: var(--status-text);
+  border: none;
+  background: var(--status-blocked-bg);
+  color: var(--status-text);
 }
 
 .delete-btn:hover {
-    filter: brightness(1.1);
+  filter: brightness(1.1);
 }
 
 .save-btn {
-    padding: 0.5rem 1rem;
-    border: none;
-    border-radius: 4px;
-    background: var(--primary-button-bg);
-    color: var(--primary-button-text);
-    cursor: pointer;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  background: var(--primary-button-bg);
+  color: var(--primary-button-text);
+  cursor: pointer;
 }
 
 .save-btn:disabled {
-    opacity: 0.6;
-    cursor: default;
+  opacity: 0.6;
+  cursor: default;
 }
 
 .cancel-btn {
-    padding: 0.5rem 1rem;
-    border: 1px solid var(--control-border);
-    border-radius: 4px;
-    background: var(--control-bg);
-    color: var(--control-text);
-    cursor: pointer;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--control-border);
+  border-radius: 4px;
+  background: var(--control-bg);
+  color: var(--control-text);
+  cursor: pointer;
 }
 
 /* Reaction button style */
 .reaction-button.active {
-    background: #eef2ff;
-    border-color: #6366f1;
+  background: var(--reaction-active-bg);
+  border-color: var(--reaction-active-border);
 }
 
 .reaction-button:disabled {
-    cursor: not-allowed;
-    opacity: 0.7;
+  cursor: not-allowed;
+  opacity: 0.7;
 }
 
 .reaction-emoji {
-    line-height: 1.5;
+  line-height: 1.5;
 }

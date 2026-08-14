@@ -6,12 +6,29 @@ const { requireAuth, checkRole } = require("../middleware/auth");
 const SORT_VALUES = ["newest", "oldest", "most-reactions"];
 const router = express.Router();
 
+function normalizeTags(tags) {
+  if (!Array.isArray(tags)) {
+    return [];
+  }
+
+  return [
+    ...new Set(
+      tags
+        .filter((tag) => typeof tag === "string" && tag.trim() !== "")
+        .map((tag) => tag.trim().toLowerCase().replace(/\s+/g, " "))
+    ),
+  ];
+}
+
 const createUpdateLimiter = rateLimit({
   windowMs: 60 * 1000,
   limit: 15,
   standardHeaders: true,
   legacyHeaders: false,
-  message: { error: "Too many updates posted. Please wait a minute before posting again." },
+  message: {
+    error:
+      "Too many updates posted. Please wait a minute before posting again.",
+  },
   keyGenerator: (req) => req.user?.id,
 });
 
@@ -150,47 +167,42 @@ router.delete("/:id", requireAuth, checkRole("LEAD"), async (req, res) => {
 });
 
 // POST /api/updates
-router.post("/", requireAuth, createUpdateLimiter, checkRole("LEAD", "MEMBER"), async (req, res) => {
-  try {
-    const { text, status, tags } = req.body;
+router.post(
+  "/",
+  requireAuth,
+  createUpdateLimiter,
+  checkRole("LEAD", "MEMBER"),
+  async (req, res) => {
+    try {
+      const { text, status, tags } = req.body;
 
-    if (!text || !text.trim()) {
-      return res
-        .status(400)
-        .json({ error: "text is required and cannot be empty" });
-    }
-
-    if (!status || !STATUS_VALUES.includes(status)) {
-      return res.status(400).json({
-        error: `status is required and must be one of: ${STATUS_VALUES.join(", ")}`,
-      });
-    }
-
-    function normalizeTags(tags) {
-      if (!Array.isArray(tags)) {
-        return [];
+      if (!text || !text.trim()) {
+        return res
+          .status(400)
+          .json({ error: "text is required and cannot be empty" });
       }
 
-      return ([...new Set(tags
-        .filter(tag => typeof (tag) === 'string' && tag.trim() !== "")
-        .map(tag => tag.trim().toLowerCase().replace(/\s+/g, " "))
-      )]);
-    };
+      if (!status || !STATUS_VALUES.includes(status)) {
+        return res.status(400).json({
+          error: `status is required and must be one of: ${STATUS_VALUES.join(", ")}`,
+        });
+      }
 
-    const update = await Update.create({
-      author: req.user.id,
-      text: text.trim(),
-      status,
-      tags: normalizeTags(tags),
-    });
+      const update = await Update.create({
+        author: req.user.id,
+        text: text.trim(),
+        status,
+        tags: normalizeTags(tags),
+      });
 
-    const populated = await update.populate("author", "displayName email");
+      const populated = await update.populate("author", "displayName email");
 
-    return res.status(201).json({ update: populated });
-  } catch (err) {
-    return res.status(500).json({ error: "Failed to create update" });
+      return res.status(201).json({ update: populated });
+    } catch (err) {
+      return res.status(500).json({ error: "Failed to create update" });
+    }
   }
-});
+);
 
 // POST /api/updates/:id/reactions
 router.post(
@@ -206,7 +218,9 @@ router.post(
       }
 
       if (emoji.length > 8) {
-        return res.status(400).json({ error: "emoji cannot exceed 8 characters" })
+        return res
+          .status(400)
+          .json({ error: "emoji cannot exceed 8 characters" });
       }
 
       const update = await Update.findById(req.params.id);
@@ -215,7 +229,7 @@ router.post(
       }
 
       const alreadyReacted = update.reactions.some(
-        (r) => r.user.toString() === req.user.id && r.emoji === emoji,
+        (r) => r.user.toString() === req.user.id && r.emoji === emoji
       );
       if (alreadyReacted) {
         return res
@@ -235,7 +249,7 @@ router.post(
     } catch (err) {
       return res.status(400).json({ error: "Invalid update id" });
     }
-  },
+  }
 );
 
 // DELETE /api/updates/:id/reactions/:reactionId
@@ -273,7 +287,7 @@ router.delete(
     } catch (err) {
       return res.status(400).json({ error: "Invalid update or reaction id" });
     }
-  },
+  }
 );
 
 module.exports = router;

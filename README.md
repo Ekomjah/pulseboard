@@ -49,7 +49,7 @@ all of them is `password123`), or register your own.
 You'll need a local or remote MongoDB instance - if you don't already have
 one, before doing anything below, seriously consider just
 [installing Docker](https://docs.docker.com/get-docker/) instead and using
-the Quickstart above. It gets you MongoDB *and* the API *and* the frontend
+the Quickstart above. It gets you MongoDB _and_ the API _and_ the frontend
 running with one command, which is almost always less friction than any of
 the options below just to get a database.
 
@@ -90,26 +90,21 @@ Opening screen in default (light) mode
 
 ![Opening screen](/docs/screenshots/DefaultOpeningScreen.png)
 
-
 Registration section:
 
 ![Registration screen](/docs/screenshots/RegistrationFields.png)
-
 
 Log in section:
 
 ![Login screen](/docs/screenshots/LoginFields.png)
 
-
 Posting an update:
 
 ![Posting an update](/docs/screenshots/PostAnUpdate.png)
 
-
 Sharing a reaction (emoji) to otther posts
 
 ![Sharing a reaction to other posts](/docs/screenshots/PostAfterSharingHeartReaction.png)
-
 
 ## Architecture
 
@@ -133,15 +128,15 @@ pulseboard/
 
 ### API overview
 
-| Method | Route                              | Auth required | Description                     |
-| ------ | ----------------------------------- | -------------- | -------------------------------- |
-| POST   | `/api/auth/register`                | no             | Create an account                |
-| POST   | `/api/auth/login`                   | no             | Log in, get a JWT                |
-| GET    | `/api/updates`                      | no             | List updates, optional `?author=` / `?status=` filters |
-| GET    | `/api/updates/:id`                  | no             | Get a single update              |
-| POST   | `/api/updates`                      | yes            | Post a new status update         |
-| POST   | `/api/updates/:id/reactions`        | yes            | Add an emoji reaction            |
-| DELETE | `/api/updates/:id/reactions/:rid`   | yes            | Remove your own reaction         |
+| Method | Route                             | Auth required | Description                                            |
+| ------ | --------------------------------- | ------------- | ------------------------------------------------------ |
+| POST   | `/api/auth/register`              | no            | Create an account                                      |
+| POST   | `/api/auth/login`                 | no            | Log in, get a JWT                                      |
+| GET    | `/api/updates`                    | no            | List updates, optional `?author=` / `?status=` filters |
+| GET    | `/api/updates/:id`                | no            | Get a single update                                    |
+| POST   | `/api/updates`                    | yes           | Post a new status update                               |
+| POST   | `/api/updates/:id/reactions`      | yes           | Add an emoji reaction                                  |
+| DELETE | `/api/updates/:id/reactions/:rid` | yes           | Remove your own reaction                               |
 
 The data model is intentionally shallow: a `User` has an email, display name,
 and password hash. An `Update` has an author, text body, status, and an

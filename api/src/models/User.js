@@ -26,7 +26,7 @@ const userSchema = new mongoose.Schema(
       required: true,
     },
   },
-  { timestamps: true },
+  { timestamps: true }
 );
 
 userSchema.methods.comparePassword = function comparePassword(candidate) {

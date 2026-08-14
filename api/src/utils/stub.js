@@ -1,7 +1,5 @@
-const mongoose = require("mongoose");
 const { subDays } = require("date-fns");
 const Update = require("../models/Update");
-const User = require("../models/User");
 
 async function createUpdateOnDay(authorId, daysAgo) {
   const update = await Update.create({

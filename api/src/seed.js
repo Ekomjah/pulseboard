@@ -69,17 +69,52 @@ const SEED_UPDATES = [
 // daysAgo controls the backdated createdAt for each — see comments per user below.
 const STREAK_SEED_UPDATES = [
   // Amina: active 4-day streak (today, -1, -2, -3)
-  { authorEmail: "amina@pulseboard.dev", text: "Streak seed: day -1", status: "on-track", daysAgo: 1 },
-  { authorEmail: "amina@pulseboard.dev", text: "Streak seed: day -2", status: "on-track", daysAgo: 2 },
-  { authorEmail: "amina@pulseboard.dev", text: "Streak seed: day -3", status: "on-track", daysAgo: 3 },
+  {
+    authorEmail: "amina@pulseboard.dev",
+    text: "Streak seed: day -1",
+    status: "on-track",
+    daysAgo: 1,
+  },
+  {
+    authorEmail: "amina@pulseboard.dev",
+    text: "Streak seed: day -2",
+    status: "on-track",
+    daysAgo: 2,
+  },
+  {
+    authorEmail: "amina@pulseboard.dev",
+    text: "Streak seed: day -3",
+    status: "on-track",
+    daysAgo: 3,
+  },
 
   // Diego: broken streak — posts at -1,-2 (current streak 2), gap, then older posts at -5,-6
-  { authorEmail: "diego@pulseboard.dev", text: "Streak seed: day -1", status: "on-track", daysAgo: 1 },
-  { authorEmail: "diego@pulseboard.dev", text: "Streak seed: day -5", status: "on-track", daysAgo: 5 },
-  { authorEmail: "diego@pulseboard.dev", text: "Streak seed: day -6", status: "on-track", daysAgo: 6 },
+  {
+    authorEmail: "diego@pulseboard.dev",
+    text: "Streak seed: day -1",
+    status: "on-track",
+    daysAgo: 1,
+  },
+  {
+    authorEmail: "diego@pulseboard.dev",
+    text: "Streak seed: day -5",
+    status: "on-track",
+    daysAgo: 5,
+  },
+  {
+    authorEmail: "diego@pulseboard.dev",
+    text: "Streak seed: day -6",
+    status: "on-track",
+    daysAgo: 6,
+  },
 
   // Sam: last post 4 days ago, nothing since — streak should read 0 (broken, not active)
-  { authorEmail: "sam@pulseboard.dev", text: "Streak seed: day -4", status: "blocked", daysAgo: 4 },
+  {
+    authorEmail: "sam@pulseboard.dev",
+    text: "Streak seed: day -4",
+    status: "blocked",
+    daysAgo: 4,
+  },
 
   // Priya: intentionally left with only her original SEED_UPDATES entry (today) — active streak of 1
 ];
@@ -125,14 +160,16 @@ async function seed() {
     update.createdAt = subDays(new Date(), u.daysAgo);
     await update.save({ timestamps: false }); // don't let the pre-save hook re-stamp createdAt
   }
-  console.log(`Created ${STREAK_SEED_UPDATES.length} backdated streak-seed updates`);
+  console.log(
+    `Created ${STREAK_SEED_UPDATES.length} backdated streak-seed updates`
+  );
 
   // Sprinkle a couple of reactions on the first update for demo purposes.
   const firstUpdate = await Update.findOne().sort({ createdAt: 1 });
   if (firstUpdate) {
     const reactors = Object.values(usersByEmail).slice(1, 3);
     firstUpdate.reactions.push(
-      ...reactors.map((r) => ({ emoji: "🎉", user: r._id })),
+      ...reactors.map((r) => ({ emoji: "🎉", user: r._id }))
     );
     await firstUpdate.save();
   }

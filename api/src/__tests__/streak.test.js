@@ -10,7 +10,12 @@ describe("calculateStreak", () => {
   });
 
   test("broken streak - gap in the middle", () => {
-    const days = [today, subDays(today, 1), subDays(today, 5), subDays(today, 6)];
+    const days = [
+      today,
+      subDays(today, 1),
+      subDays(today, 5),
+      subDays(today, 6),
+    ];
     // gap between day-1 and day-5 breaks the streak at 2
     expect(calculateStreak(days)).toBe(2);
   });

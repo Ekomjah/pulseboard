@@ -43,12 +43,26 @@ export default function HomePage() {
 
   return (
     <main className="container">
-      <h1>PulseBoard</h1>
-      <p className="tagline">The team standup feed - post, react, stay in sync.</p>
+      <header className="app-header">
+        <h1>PulseBoard</h1>
 
-      <button type="button" onClick={handleThemeToggle} className="theme-toggle">
-        {theme === "light" ? "Switch to dark mode" : "Switch to light mode"}
-      </button>
+        <label className="theme-toggle">
+          <span className="theme-toggle-label">
+            {theme === "light" ? "Light theme" : "Dark theme"}
+          </span>
+          <input
+            type="checkbox"
+            checked={theme === "dark"}
+            onChange={handleThemeToggle}
+            aria-label="Toggle color theme"
+          />
+          <span className="theme-toggle-track" aria-hidden="true" />
+        </label>
+      </header>
+
+      <p className="tagline">
+        The team standup feed - post, react, stay in sync.
+      </p>
 
       {ready && <AuthPanel auth={auth} onSignIn={signIn} onSignOut={signOut} />}
 

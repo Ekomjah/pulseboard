@@ -22,7 +22,7 @@ describe("UpdateForm loading state", () => {
       () =>
         new Promise((resolve) => {
           resolveRequest = resolve;
-        }),
+        })
     );
 
     const onPosted = jest.fn();
@@ -98,7 +98,6 @@ describe("CountCharacters", () => {
   });
 });
 
-
 describe("UpdateForm saving submissions", () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -107,7 +106,7 @@ describe("UpdateForm saving submissions", () => {
 
   it("stores the form submission in LocalStorage on network error (Firefox)", async () => {
     let rejectRequest = new TypeError(
-      "NetworkError when attempting to fetch resource.",
+      "NetworkError when attempting to fetch resource."
     );
 
     createUpdate.mockImplementation(() => {
@@ -135,7 +134,7 @@ describe("UpdateForm saving submissions", () => {
     });
 
     expect(localStorage.getItem("queuedMessages")).toMatch(
-      /\[{\"id\":\"test\d+\",\"text\":\"test\",\"status\":\"on-track\",\"tags\":\[.*\]}\]/,
+      /\[{\"id\":\"test\d+\",\"text\":\"test\",\"status\":\"on-track\",\"tags\":\[.*\]}\]/
     );
   });
 
@@ -167,7 +166,7 @@ describe("UpdateForm saving submissions", () => {
     });
 
     expect(localStorage.getItem("queuedMessages")).toMatch(
-      /\[{\"id\":\"test\d+\",\"text\":\"test\",\"status\":\"on-track\",\"tags\":\[.*\]}\]/,
+      /\[{\"id\":\"test\d+\",\"text\":\"test\",\"status\":\"on-track\",\"tags\":\[.*\]}\]/
     );
   });
 });

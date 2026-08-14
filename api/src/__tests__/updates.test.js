@@ -25,7 +25,7 @@ async function registerUser(overrides = {}) {
   if ("role" in overrides) {
     throw new Error(
       "registerUser() must not pass role through the public endpoint; " +
-      "promote the user via User.findOneAndUpdate in test setup instead.",
+        "promote the user via User.findOneAndUpdate in test setup instead."
     );
   }
   const res = await request(app)
@@ -99,7 +99,7 @@ describe("POST /api/updates", () => {
     const res = await makeRequest();
     expect(res.status).toBe(429);
     expect(res.body.error).toBe(
-      "Too many updates posted. Please wait a minute before posting again.",
+      "Too many updates posted. Please wait a minute before posting again."
     );
   });
 
@@ -107,12 +107,16 @@ describe("POST /api/updates", () => {
     const res = await request(app)
       .post("/api/updates")
       .set("Authorization", `Bearer ${token}`)
-      .send({ text: "Shipped the login page", status: "done", tags: ['frontend', 'ui'] });
+      .send({
+        text: "Shipped the login page",
+        status: "done",
+        tags: ["frontend", "ui"],
+      });
 
     expect(res.status).toBe(201);
     expect(res.body.update.text).toBe("Shipped the login page");
     expect(res.body.update.status).toBe("done");
-    expect(res.body.update.tags).toStrictEqual(['frontend', 'ui']);
+    expect(res.body.update.tags).toStrictEqual(["frontend", "ui"]);
     expect(res.body.update.author._id).toBe(userId);
   });
 
@@ -197,7 +201,7 @@ describe("GET /api/updates", () => {
 
     expect(res.status).toBe(400);
     expect(res.body.error).toBe(
-      "sort must be one of: newest, oldest, most-reactions",
+      "sort must be one of: newest, oldest, most-reactions"
     );
   });
 
@@ -246,18 +250,18 @@ describe("GET /api/updates", () => {
     await request(app)
       .post("/api/updates")
       .set("Authorization", `Bearer ${token}`)
-      .send({ text: "Blocked update", status: "blocked", tags: ['frontend'] });
+      .send({ text: "Blocked update", status: "blocked", tags: ["frontend"] });
 
     await request(app)
       .post("/api/updates")
       .set("Authorization", `Bearer ${token}`)
-      .send({ text: "Done update", status: "done", tags: ['backend'] });
+      .send({ text: "Done update", status: "done", tags: ["backend"] });
 
     const res = await request(app).get("/api/updates?tag=frontend");
 
     expect(res.status).toBe(200);
     expect(res.body.updates).toHaveLength(1);
-    expect(res.body.updates[0].tags[0]).toBe('frontend');
+    expect(res.body.updates[0].tags[0]).toBe("frontend");
   });
 });
 
@@ -270,7 +274,7 @@ describe("DELETE /api/updates/:id", () => {
     // that reflects the promotion.
     await User.findOneAndUpdate(
       { email: "author@example.com" },
-      { role: "LEAD" },
+      { role: "LEAD" }
     );
 
     const loginRes = await request(app).post("/api/auth/login").send({
@@ -357,8 +361,6 @@ describe("POST /api/updates/:id/reactions", () => {
   });
 
   it("returns 404 for a reaction on a nonexistent update", async () => {
-
-
     const res = await request(app)
       .post("/api/updates/64b7f3f3f3f3f3f3f3f3f3f3/reactions")
       .set("Authorization", `Bearer ${token}`)
@@ -368,7 +370,6 @@ describe("POST /api/updates/:id/reactions", () => {
   });
 
   it("returns 400 if the emoji string exceeds 8 characters", async () => {
-
     const createRes = await request(app)
       .post("/api/updates")
       .set("Authorization", `Bearer ${token}`)
@@ -379,12 +380,11 @@ describe("POST /api/updates/:id/reactions", () => {
     const res = await request(app)
       .post(`/api/updates/${updateId}/reactions`)
       .set("Authorization", `Bearer ${token}`)
-      .send({ emoji: '123456789' })
+      .send({ emoji: "123456789" });
 
     expect(res.status).toBe(400);
     expect(res.body.error).toBe("emoji cannot exceed 8 characters");
   });
-
 });
 
 describe("DELETE /api/updates/:id/reactions/:reactionId", () => {
@@ -585,7 +585,9 @@ describe("PATCH /api/updates/:id", () => {
       });
 
     expect(res.status).toBe(400);
-    expect(res.body.error).toBe("status must be one of: on-track, blocked, done");
+    expect(res.body.error).toBe(
+      "status must be one of: on-track, blocked, done"
+    );
   });
 
   it("rejects an empty text value", async () => {
@@ -612,7 +614,11 @@ describe("PATCH /api/updates/:id", () => {
 });
 
 test("GET /api/users/:id/streak returns correct streak", async () => {
-  const user = await User.create({ email: "a@test.com", displayName: "A", passwordHash: "x" });
+  const user = await User.create({
+    email: "a@test.com",
+    displayName: "A",
+    passwordHash: "x",
+  });
 
   await createUpdateOnDay(user._id, 0); // today
   await createUpdateOnDay(user._id, 1); // yesterday

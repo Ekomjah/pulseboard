@@ -14,7 +14,7 @@ import {
   deleteUpdate,
   editUpdate,
   removeReaction,
-  getStreak
+  getStreak,
 } from "@/lib/api";
 
 const REACTION_OPTIONS = ["👍", "🎉", "❤️", "🚀"];
@@ -75,7 +75,7 @@ export function groupReactions(reactions) {
 
 export function findUserReaction(reactions, userId, emoji) {
   return reactions.find(
-    (reaction) => reaction.emoji === emoji && reaction.user?._id === userId,
+    (reaction) => reaction.emoji === emoji && reaction.user?._id === userId
   );
 }
 
@@ -86,7 +86,7 @@ export default function UpdateCard({ update, auth, onUpdated, onDeleted }) {
   const [editStatus, setEditStatus] = useState(update.status);
   const [saving, setSaving] = useState(false);
   const reactionGroups = groupReactions(update.reactions || []);
-  const [streak, setStreak] = useState(null)
+  const [streak, setStreak] = useState(null);
 
   const visibleReactions = [
     ...new Set([...REACTION_OPTIONS, ...Object.keys(reactionGroups)]),
@@ -111,7 +111,7 @@ export default function UpdateCard({ update, auth, onUpdated, onDeleted }) {
     const myReaction = findUserReaction(
       update.reactions || [],
       auth.user?._id,
-      emoji,
+      emoji
     );
 
     try {
@@ -120,12 +120,12 @@ export default function UpdateCard({ update, auth, onUpdated, onDeleted }) {
       if (myReaction) {
         ({ update: updated } = await removeReaction(
           { updateId: update._id, reactionId: myReaction._id },
-          auth.token,
+          auth.token
         ));
       } else {
         ({ update: updated } = await addReaction(
           { updateId: update._id, emoji },
-          auth.token,
+          auth.token
         ));
       }
 
@@ -174,7 +174,7 @@ export default function UpdateCard({ update, auth, onUpdated, onDeleted }) {
           text: editText,
           status: editStatus,
         },
-        auth.token,
+        auth.token
       );
 
       onUpdated(updated);

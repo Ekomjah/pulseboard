@@ -108,7 +108,7 @@ describe("UpdateCard", () => {
     render(<UpdateCard update={update} auth={null} onUpdated={() => {}} />);
 
     expect(
-      await screen.findByText("Shipped the login page"),
+      await screen.findByText("Shipped the login page")
     ).toBeInTheDocument();
     expect(screen.queryByLabelText(/day streak/)).not.toBeInTheDocument();
   });
@@ -120,7 +120,7 @@ describe("UpdateCard", () => {
       createdAt,
     };
     render(
-      <UpdateCard update={recentUpdate} auth={null} onUpdated={() => {}} />,
+      <UpdateCard update={recentUpdate} auth={null} onUpdated={() => {}} />
     );
     const timeElement = screen.getByText("just now");
     expect(timeElement).toHaveAttribute("datetime", createdAt);
@@ -148,7 +148,7 @@ describe("UpdateCard", () => {
 
     expect(screen.getByRole("button", { name: /🎉 0/i })).toHaveAttribute(
       "aria-pressed",
-      "false",
+      "false"
     );
 
     fireEvent.click(screen.getByRole("button", { name: /🎉 0/i }));
@@ -156,7 +156,7 @@ describe("UpdateCard", () => {
     await waitFor(() => {
       expect(addReaction).toHaveBeenCalledWith(
         { updateId: "1", emoji: "🎉" },
-        "test-token",
+        "test-token"
       );
     });
     expect(onUpdated).toHaveBeenCalledWith(updatedUpdate);
@@ -179,12 +179,12 @@ describe("UpdateCard", () => {
         update={ownReactionUpdate}
         auth={auth}
         onUpdated={onUpdated}
-      />,
+      />
     );
 
     expect(screen.getByRole("button", { name: /👍 1/i })).toHaveAttribute(
       "aria-pressed",
-      "true",
+      "true"
     );
 
     fireEvent.click(screen.getByRole("button", { name: /👍 1/i }));
@@ -192,7 +192,7 @@ describe("UpdateCard", () => {
     await waitFor(() => {
       expect(removeReaction).toHaveBeenCalledWith(
         { updateId: "1", reactionId: "r1" },
-        "test-token",
+        "test-token"
       );
     });
     expect(addReaction).not.toHaveBeenCalled();
@@ -219,12 +219,12 @@ describe("UpdateCard", () => {
         update={otherUserReactionUpdate}
         auth={auth}
         onUpdated={onUpdated}
-      />,
+      />
     );
 
     expect(screen.getByRole("button", { name: /👍 1/i })).toHaveAttribute(
       "aria-pressed",
-      "false",
+      "false"
     );
 
     fireEvent.click(screen.getByRole("button", { name: /👍 1/i }));
@@ -232,7 +232,7 @@ describe("UpdateCard", () => {
     await waitFor(() => {
       expect(addReaction).toHaveBeenCalledWith(
         { updateId: "1", emoji: "👍" },
-        "test-token",
+        "test-token"
       );
     });
     expect(removeReaction).not.toHaveBeenCalled();
@@ -245,10 +245,10 @@ describe("UpdateCard", () => {
     fireEvent.click(screen.getByRole("button", { name: "Edit" }));
 
     expect(screen.getByRole("textbox", { name: /update text/i })).toHaveValue(
-      update.text,
+      update.text
     );
     expect(screen.getByRole("combobox", { name: /status/i })).toHaveValue(
-      update.status,
+      update.status
     );
     expect(screen.getByRole("button", { name: "Save" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Cancel" })).toBeInTheDocument();
@@ -289,7 +289,7 @@ describe("UpdateCard", () => {
           text: "Fixed the login page bug",
           status: "on-track",
         },
-        "test-token",
+        "test-token"
       );
     });
 
@@ -303,11 +303,11 @@ describe("UpdateCard", () => {
     };
 
     render(
-      <UpdateCard update={update} auth={otherAuth} onUpdated={() => {}} />,
+      <UpdateCard update={update} auth={otherAuth} onUpdated={() => {}} />
     );
 
     expect(
-      screen.queryByRole("button", { name: "Edit" }),
+      screen.queryByRole("button", { name: "Edit" })
     ).not.toBeInTheDocument();
   });
 
@@ -327,7 +327,7 @@ describe("UpdateCard", () => {
     fireEvent.click(screen.getByRole("button", { name: "Cancel" }));
 
     expect(
-      screen.queryByRole("textbox", { name: /update text/i }),
+      screen.queryByRole("textbox", { name: /update text/i })
     ).not.toBeInTheDocument();
 
     expect(screen.getByText("Shipped the login page")).toBeInTheDocument();
@@ -351,11 +351,11 @@ describe("UpdateCard", () => {
     fireEvent.click(screen.getByRole("button", { name: "Edit" }));
 
     expect(screen.getByRole("textbox", { name: /update text/i })).toHaveValue(
-      update.text,
+      update.text
     );
 
     expect(screen.getByRole("combobox", { name: /status/i })).toHaveValue(
-      update.status,
+      update.status
     );
   });
 
@@ -381,7 +381,7 @@ describe("UpdateCard", () => {
     });
 
     expect(screen.getByRole("textbox", { name: /update text/i })).toHaveValue(
-      "Draft with an error",
+      "Draft with an error"
     );
 
     expect(screen.getByRole("button", { name: "Cancel" })).toBeInTheDocument();

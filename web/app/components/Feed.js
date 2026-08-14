@@ -83,7 +83,7 @@ export default function Feed({ auth, refreshToken }) {
 
   function handleUpdated(updated) {
     setUpdates((prev) =>
-      prev.map((u) => (u._id === updated._id ? updated : u)),
+      prev.map((u) => (u._id === updated._id ? updated : u))
     );
   }
 
@@ -108,11 +108,7 @@ export default function Feed({ auth, refreshToken }) {
     <div className="feed">
       <div className="filter-bar">
         <div className="filter-row">
-          <div
-            className="segmented"
-            role="group"
-            aria-label="Filter by status"
-          >
+          <div className="segmented" role="group" aria-label="Filter by status">
             {["", ...STATUS_OPTIONS].map((value) => (
               <button
                 key={value || "all"}

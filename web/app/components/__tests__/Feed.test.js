@@ -121,13 +121,13 @@ describe("Feed - handleShowMyUpdates", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByRole("option", { name: "Diego Fernandez" })
+        screen.getByRole("option", { name: "Diego Fernandez" }),
       ).toBeInTheDocument();
       expect(
-        screen.getByRole("option", { name: "Priya Sharma" })
+        screen.getByRole("option", { name: "Priya Sharma" }),
       ).toBeInTheDocument();
       expect(
-        screen.getByRole("option", { name: "Amina Khan" })
+        screen.getByRole("option", { name: "Amina Khan" }),
       ).toBeInTheDocument();
     });
 
@@ -148,13 +148,13 @@ describe("Feed - handleShowMyUpdates", () => {
     });
 
     expect(
-      screen.getByRole("option", { name: "Diego Fernandez" })
+      screen.getByRole("option", { name: "Diego Fernandez" }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("option", { name: "Priya Sharma" })
+      screen.getByRole("option", { name: "Priya Sharma" }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("option", { name: "Amina Khan" })
+      screen.getByRole("option", { name: "Amina Khan" }),
     ).toBeInTheDocument();
   });
 
@@ -194,10 +194,10 @@ describe("Feed - handleShowMyUpdates", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByRole("option", { name: "Diego Fernandez" })
+        screen.getByRole("option", { name: "Diego Fernandez" }),
       ).toBeInTheDocument();
       expect(
-        screen.getByRole("option", { name: "Priya Sharma" })
+        screen.getByRole("option", { name: "Priya Sharma" }),
       ).toBeInTheDocument();
     });
 
@@ -214,10 +214,10 @@ describe("Feed - handleShowMyUpdates", () => {
     });
 
     expect(
-      screen.getByRole("option", { name: "Diego Fernandez" })
+      screen.getByRole("option", { name: "Diego Fernandez" }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("option", { name: "Priya Sharma" })
+      screen.getByRole("option", { name: "Priya Sharma" }),
     ).toBeInTheDocument();
   });
 });

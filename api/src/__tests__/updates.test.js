@@ -25,7 +25,7 @@ async function registerUser(overrides = {}) {
   if ("role" in overrides) {
     throw new Error(
       "registerUser() must not pass role through the public endpoint; " +
-        "promote the user via User.findOneAndUpdate in test setup instead."
+        "promote the user via User.findOneAndUpdate in test setup instead.",
     );
   }
   const res = await request(app)
@@ -84,6 +84,16 @@ describe("POST /api/updates", () => {
     expect(res.status).toBe(400);
   });
 
+  it("rejects text longer than 1000 characters", async () => {
+    const res = await request(app)
+      .post("/api/updates")
+      .set("Authorization", `Bearer ${token}`)
+      .send({ text: "a".repeat(1001), status: "done" });
+
+    expect(res.status).toBe(400);
+    expect(res.body.error).toBe("text must be 1000 characters or fewer");
+  });
+
   it("rate limits after 15 posts in a window", async () => {
     const makeRequest = () =>
       request(app)
@@ -99,7 +109,7 @@ describe("POST /api/updates", () => {
     const res = await makeRequest();
     expect(res.status).toBe(429);
     expect(res.body.error).toBe(
-      "Too many updates posted. Please wait a minute before posting again."
+      "Too many updates posted. Please wait a minute before posting again.",
     );
   });
 
@@ -201,7 +211,7 @@ describe("GET /api/updates", () => {
 
     expect(res.status).toBe(400);
     expect(res.body.error).toBe(
-      "sort must be one of: newest, oldest, most-reactions"
+      "sort must be one of: newest, oldest, most-reactions",
     );
   });
 
@@ -263,6 +273,66 @@ describe("GET /api/updates", () => {
     expect(res.body.updates).toHaveLength(1);
     expect(res.body.updates[0].tags[0]).toBe("frontend");
   });
+
+  it("filters by q", async () => {
+    await request(app)
+      .post("/api/updates")
+      .set("Authorization", `Bearer ${token}`)
+      .send({ text: "Team meeting today", status: "on-track" });
+
+    await request(app)
+      .post("/api/updates")
+      .set("Authorization", `Bearer ${token}`)
+      .send({ text: "Fixed login bug", status: "done" });
+
+    await request(app)
+      .post("/api/updates")
+      .set("Authorization", `Bearer ${token}`)
+      .send({ text: "Meeting with the client", status: "blocked" });
+
+    const res = await request(app).get("/api/updates?q=MEETING");
+
+    expect(res.status).toBe(200);
+    expect(res.body.updates).toHaveLength(2);
+    expect(res.body.updates[0].text).toBe("Meeting with the client");
+    expect(res.body.updates[1].text).toBe("Team meeting today");
+  });
+
+  it("returns an empty array when q matches no updates", async () => {
+    await request(app)
+      .post("/api/updates")
+      .set("Authorization", `Bearer ${token}`)
+      .send({ text: "Team meeting today", status: "on-track" });
+
+    const res = await request(app).get("/api/updates?q=nonexistent");
+
+    expect(res.status).toBe(200);
+    expect(res.body.updates).toEqual([]);
+  });
+
+  it("combines q with status filter", async () => {
+    await request(app)
+      .post("/api/updates")
+      .set("Authorization", `Bearer ${token}`)
+      .send({ text: "Meeting with frontend team", status: "blocked" });
+
+    await request(app)
+      .post("/api/updates")
+      .set("Authorization", `Bearer ${token}`)
+      .send({ text: "Meeting with backend team", status: "done" });
+
+    await request(app)
+      .post("/api/updates")
+      .set("Authorization", `Bearer ${token}`)
+      .send({ text: "Fixed frontend bug", status: "blocked" });
+
+    const res = await request(app).get("/api/updates?q=meeting&status=blocked");
+
+    expect(res.status).toBe(200);
+    expect(res.body.updates).toHaveLength(1);
+    expect(res.body.updates[0].text).toBe("Meeting with frontend team");
+    expect(res.body.updates[0].status).toBe("blocked");
+  });
 });
 
 describe("DELETE /api/updates/:id", () => {
@@ -274,7 +344,7 @@ describe("DELETE /api/updates/:id", () => {
     // that reflects the promotion.
     await User.findOneAndUpdate(
       { email: "author@example.com" },
-      { role: "LEAD" }
+      { role: "LEAD" },
     );
 
     const loginRes = await request(app).post("/api/auth/login").send({
@@ -479,6 +549,23 @@ describe("DELETE /api/updates/:id/reactions/:reactionId", () => {
 });
 
 describe("PATCH /api/updates/:id", () => {
+  it("rejects text longer than 1000 characters", async () => {
+    const createRes = await request(app)
+      .post("/api/updates")
+      .set("Authorization", `Bearer ${token}`)
+      .send({ text: "Valid update", status: "on-track" });
+
+    const updateId = createRes.body.update._id;
+
+    const res = await request(app)
+      .patch(`/api/updates/${updateId}`)
+      .set("Authorization", `Bearer ${token}`)
+      .send({ text: "a".repeat(1001) });
+
+    expect(res.status).toBe(400);
+    expect(res.body.error).toBe("text must be 1000 characters or fewer");
+  });
+
   it("allows the author to edit their own update", async () => {
     const createRes = await request(app)
       .post("/api/updates")
@@ -586,7 +673,7 @@ describe("PATCH /api/updates/:id", () => {
 
     expect(res.status).toBe(400);
     expect(res.body.error).toBe(
-      "status must be one of: on-track, blocked, done"
+      "status must be one of: on-track, blocked, done",
     );
   });
 

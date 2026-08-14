@@ -10,7 +10,7 @@ function signToken(user) {
     process.env.JWT_SECRET,
     {
       expiresIn: "7d",
-    }
+    },
   );
 }
 
@@ -29,6 +29,11 @@ router.post("/register", async (req, res) => {
       return res
         .status(400)
         .json({ error: "password must be at least 8 characters long" });
+    }
+    if (displayName.length > 100) {
+      return res.status(400).json({
+        error: "display name must be 100 characters or less",
+      });
     }
 
     const existing = await User.findOne({ email: email.toLowerCase() });

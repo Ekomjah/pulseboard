@@ -161,7 +161,7 @@ async function seed() {
     await update.save({ timestamps: false }); // don't let the pre-save hook re-stamp createdAt
   }
   console.log(
-    `Created ${STREAK_SEED_UPDATES.length} backdated streak-seed updates`
+    `Created ${STREAK_SEED_UPDATES.length} backdated streak-seed updates`,
   );
 
   // Sprinkle a couple of reactions on the first update for demo purposes.
@@ -169,7 +169,7 @@ async function seed() {
   if (firstUpdate) {
     const reactors = Object.values(usersByEmail).slice(1, 3);
     firstUpdate.reactions.push(
-      ...reactors.map((r) => ({ emoji: "🎉", user: r._id }))
+      ...reactors.map((r) => ({ emoji: "🎉", user: r._id })),
     );
     await firstUpdate.save();
   }

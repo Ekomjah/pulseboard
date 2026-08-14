@@ -15,7 +15,7 @@ function normalizeTags(tags) {
     ...new Set(
       tags
         .filter((tag) => typeof tag === "string" && tag.trim() !== "")
-        .map((tag) => tag.trim().toLowerCase().replace(/\s+/g, " "))
+        .map((tag) => tag.trim().toLowerCase().replace(/\s+/g, " ")),
     ),
   ];
 }
@@ -35,7 +35,7 @@ const createUpdateLimiter = rateLimit({
 // GET /api/updates?author=<userId>&status=<on-track|blocked|done>&tag=<free-form-tag>&sort=<newest|oldest|most-reactions>
 router.get("/", async (req, res) => {
   try {
-    const { author, status, tag, sort } = req.query;
+    const { author, status, tag, sort, q } = req.query;
     const filter = {};
 
     if (author) {
@@ -69,11 +69,20 @@ router.get("/", async (req, res) => {
       .populate("author", "displayName email")
       .populate("reactions.user", "displayName email");
 
-    if (sort === "most-reactions") {
-      updates.sort((a, b) => b.reactions.length - a.reactions.length);
+    let filterUpdates = updates;
+
+    if (q) {
+      const searchString = q.trim().toLowerCase();
+      filterUpdates = updates.filter((update) => {
+        return update.text.toLowerCase().includes(searchString);
+      });
     }
 
-    return res.json({ updates });
+    if (sort === "most-reactions") {
+      filterUpdates.sort((a, b) => b.reactions.length - a.reactions.length);
+    }
+
+    return res.json({ updates: filterUpdates });
   } catch (err) {
     return res.status(500).json({ error: "Failed to fetch updates" });
   }
@@ -123,6 +132,12 @@ router.patch("/:id", requireAuth, async (req, res) => {
       if (!text || !text.trim()) {
         return res.status(400).json({
           error: "text is required and cannot be empty",
+        });
+      }
+
+      if (text.length > 1000) {
+        return res.status(400).json({
+          error: "text must be 1000 characters or fewer",
         });
       }
 
@@ -182,6 +197,12 @@ router.post(
           .json({ error: "text is required and cannot be empty" });
       }
 
+      if (text.length > 1000) {
+        return res
+          .status(400)
+          .json({ error: "text must be 1000 characters or fewer" });
+      }
+
       if (!status || !STATUS_VALUES.includes(status)) {
         return res.status(400).json({
           error: `status is required and must be one of: ${STATUS_VALUES.join(", ")}`,
@@ -201,7 +222,7 @@ router.post(
     } catch (err) {
       return res.status(500).json({ error: "Failed to create update" });
     }
-  }
+  },
 );
 
 // POST /api/updates/:id/reactions
@@ -229,7 +250,7 @@ router.post(
       }
 
       const alreadyReacted = update.reactions.some(
-        (r) => r.user.toString() === req.user.id && r.emoji === emoji
+        (r) => r.user.toString() === req.user.id && r.emoji === emoji,
       );
       if (alreadyReacted) {
         return res
@@ -249,7 +270,7 @@ router.post(
     } catch (err) {
       return res.status(400).json({ error: "Invalid update id" });
     }
-  }
+  },
 );
 
 // DELETE /api/updates/:id/reactions/:reactionId
@@ -285,9 +306,10 @@ router.delete(
 
       return res.json({ update: populated });
     } catch (err) {
+      console.error(err);
       return res.status(400).json({ error: "Invalid update or reaction id" });
     }
-  }
+  },
 );
 
 module.exports = router;

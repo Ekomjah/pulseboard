@@ -75,8 +75,36 @@ export function groupReactions(reactions) {
 
 export function findUserReaction(reactions, userId, emoji) {
   return reactions.find(
-    (reaction) => reaction.emoji === emoji && reaction.user?._id === userId
+    (reaction) => reaction.emoji === emoji && reaction.user?._id === userId,
   );
+}
+
+const MENTION_PATTERN = /@[a-zA-Z0-9_]+/g;
+
+export function renderWithMentions(text) {
+  if (!text) return text;
+
+  const nodes = [];
+  let lastIndex = 0;
+  let match;
+
+  while ((match = MENTION_PATTERN.exec(text)) !== null) {
+    if (match.index > lastIndex) {
+      nodes.push(text.slice(lastIndex, match.index));
+    }
+    nodes.push(
+      <span key={match.index} className="mention">
+        {match[0]}
+      </span>,
+    );
+    lastIndex = match.index + match[0].length;
+  }
+
+  if (lastIndex < text.length) {
+    nodes.push(text.slice(lastIndex));
+  }
+
+  return nodes;
 }
 
 export default function UpdateCard({ update, auth, onUpdated, onDeleted }) {
@@ -111,7 +139,7 @@ export default function UpdateCard({ update, auth, onUpdated, onDeleted }) {
     const myReaction = findUserReaction(
       update.reactions || [],
       auth.user?._id,
-      emoji
+      emoji,
     );
 
     try {
@@ -120,12 +148,12 @@ export default function UpdateCard({ update, auth, onUpdated, onDeleted }) {
       if (myReaction) {
         ({ update: updated } = await removeReaction(
           { updateId: update._id, reactionId: myReaction._id },
-          auth.token
+          auth.token,
         ));
       } else {
         ({ update: updated } = await addReaction(
           { updateId: update._id, emoji },
-          auth.token
+          auth.token,
         ));
       }
 
@@ -174,7 +202,7 @@ export default function UpdateCard({ update, auth, onUpdated, onDeleted }) {
           text: editText,
           status: editStatus,
         },
-        auth.token
+        auth.token,
       );
 
       onUpdated(updated);
@@ -258,7 +286,7 @@ export default function UpdateCard({ update, auth, onUpdated, onDeleted }) {
           />
         </div>
       ) : (
-        <p className="update-text">{update.text}</p>
+        <p className="update-text">{renderWithMentions(update.text)}</p>
       )}
       <footer>
         <div className="reactions">

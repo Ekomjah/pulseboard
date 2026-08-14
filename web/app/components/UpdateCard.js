@@ -1,7 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Flame } from "lucide-react";
+import {
+  CircleArrowRight,
+  CircleCheck,
+  CircleX,
+  Flame,
+  Pencil,
+  Trash2,
+} from "lucide-react";
 import {
   addReaction,
   deleteUpdate,
@@ -19,9 +26,9 @@ const STATUS_LABELS = {
 };
 
 const STATUS_ICONS = {
-  "on-track": "→",
-  blocked: "✕",
-  done: "✓",
+  "on-track": CircleArrowRight,
+  blocked: CircleX,
+  done: CircleCheck,
 };
 
 const MS_PER_MINUTE = 60 * 1000;
@@ -232,7 +239,10 @@ export default function UpdateCard({ update, auth, onUpdated, onDeleted }) {
         ) : (
           <span className={`status-badge status-${update.status}`}>
             <span className="status-icon" aria-hidden="true">
-              {STATUS_ICONS[update.status]}
+              {(() => {
+                const Icon = STATUS_ICONS[update.status];
+                return Icon ? <Icon size={14} strokeWidth={2.5} /> : null;
+              })()}
             </span>
             {STATUS_LABELS[update.status] || update.status}
           </span>
@@ -299,8 +309,10 @@ export default function UpdateCard({ update, auth, onUpdated, onDeleted }) {
                 type="button"
                 className="edit-btn"
                 onClick={handleEditStart}
+                aria-label="Edit"
+                title="Edit update"
               >
-                Edit
+                <Pencil size={16} strokeWidth={2} />
               </button>
             )}
             {auth?.user?.role === "LEAD" && (
@@ -308,8 +320,10 @@ export default function UpdateCard({ update, auth, onUpdated, onDeleted }) {
                 className="delete-btn"
                 type="button"
                 onClick={handleDelete}
+                aria-label="Delete"
+                title="Delete update"
               >
-                Delete
+                <Trash2 size={16} strokeWidth={2} />
               </button>
             )}
           </>

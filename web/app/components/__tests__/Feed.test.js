@@ -131,7 +131,9 @@ describe("Feed - handleShowMyUpdates", () => {
             ).toBeInTheDocument();
         });
 
-        const authorSelect = screen.getAllByRole("combobox")[1];
+        const authorSelect = screen.getByRole("combobox", {
+            name: "Filter by author",
+        });
 
         fireEvent.change(authorSelect, {
             target: { value: "u1" },
@@ -199,11 +201,9 @@ describe("Feed - handleShowMyUpdates", () => {
             ).toBeInTheDocument();
         });
 
-        const statusSelect = screen.getAllByRole("combobox")[0];
+        const statusButton = screen.getByRole("button", { name: "On track" });
 
-        fireEvent.change(statusSelect, {
-            target: { value: "on-track" },
-        });
+        fireEvent.click(statusButton);
 
         await waitFor(() => {
             expect(listUpdates).toHaveBeenLastCalledWith({

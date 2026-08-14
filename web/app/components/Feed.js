@@ -6,6 +6,12 @@ import UpdateCard from "./UpdateCard";
 
 const STATUS_OPTIONS = ["on-track", "blocked", "done"];
 
+const STATUS_LABELS = {
+  "on-track": "On track",
+  blocked: "Blocked",
+  done: "Done",
+};
+
 export default function Feed({ auth, refreshToken }) {
   const [updates, setUpdates] = useState([]);
   const [allUpdates, setAllUpdates] = useState([]);
@@ -101,49 +107,71 @@ export default function Feed({ auth, refreshToken }) {
   return (
     <div className="feed">
       <div className="filter-bar">
-        <select
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-        >
-          <option value="">All statuses</option>
-          {STATUS_OPTIONS.map((s) => (
-            <option key={s} value={s}>
-              {s}
-            </option>
-          ))}
-        </select>
-        <select
-          value={authorFilter}
-          onChange={(e) => setAuthorFilter(e.target.value)}
-        >
-          <option value="">All authors</option>
-          {authors.map(([id, name]) => (
-            <option key={id} value={id}>
-              {name}
-            </option>
-          ))}
-        </select>
-        <select
-          value={tagFilter}
-          onChange={(e) => setTagFilter(e.target.value)}
-        >
-          <option value="">All tags</option>
-          {tags.map((t) => (
-            <option key={t} value={t}>
-              {t}
-            </option>
-          ))}
-        </select>
-        {auth && (<div>
-          <input id="show-updates-checkbox" type="checkbox" checked={showMyUpdates} onChange={handleShowMyUpdates} />
-          <label htmlFor="show-updates-checkbox">Show My Updates</label>
-        </div>)}
-        <select value={sortOrder} onChange={(e) => setSortOrder(e.target.value)}>
-          <option value="newest">Newest first</option>
-          <option value="oldest">Oldest first</option>
-          <option value="most-reactions">Most reactions</option>
-        </select>
+        <div className="filter-row">
+          <div
+            className="segmented"
+            role="group"
+            aria-label="Filter by status"
+          >
+            {["", ...STATUS_OPTIONS].map((value) => (
+              <button
+                key={value || "all"}
+                type="button"
+                className={`seg-btn ${statusFilter === value ? "active" : ""}`}
+                aria-pressed={statusFilter === value}
+                onClick={() => setStatusFilter(value)}
+              >
+                {value ? STATUS_LABELS[value] : "All"}
+              </button>
+            ))}
+          </div>
+          {auth && (
+            <label className="filter-checkbox">
+              <input
+                type="checkbox"
+                checked={showMyUpdates}
+                onChange={handleShowMyUpdates}
+              />
+              <span>Show My Updates</span>
+            </label>
+          )}
+        </div>
 
+        <div className="filter-row">
+          <select
+            aria-label="Filter by author"
+            value={authorFilter}
+            onChange={(e) => setAuthorFilter(e.target.value)}
+          >
+            <option value="">All authors</option>
+            {authors.map(([id, name]) => (
+              <option key={id} value={id}>
+                {name}
+              </option>
+            ))}
+          </select>
+          <select
+            aria-label="Filter by tag"
+            value={tagFilter}
+            onChange={(e) => setTagFilter(e.target.value)}
+          >
+            <option value="">All tags</option>
+            {tags.map((t) => (
+              <option key={t} value={t}>
+                {t}
+              </option>
+            ))}
+          </select>
+          <select
+            aria-label="Sort updates"
+            value={sortOrder}
+            onChange={(e) => setSortOrder(e.target.value)}
+          >
+            <option value="newest">Newest first</option>
+            <option value="oldest">Oldest first</option>
+            <option value="most-reactions">Most reactions</option>
+          </select>
+        </div>
       </div>
 
       {error && <p className="error">{error}</p>}

@@ -239,16 +239,90 @@ section {
 
 .filter-bar {
     display: flex;
-    gap: 0.5rem;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 0.75rem;
     margin-bottom: 1rem;
+    background: var(--surface-bg);
+    border: 1px solid var(--surface-border);
+    border-radius: 12px;
 }
 
-.filter-bar select {
-    padding: 0.4rem;
-    border-radius: 4px;
+.filter-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.filter-row + .filter-row {
+    border-top: 1px solid var(--surface-border);
+    padding-top: 0.75rem;
+}
+
+.filter-row select {
+    flex: 1 1 140px;
+    min-width: 0;
+    height: 36px;
+    padding: 0 0.6rem;
+    border-radius: 8px;
     border: 1px solid var(--control-border);
     background: var(--control-bg);
     color: var(--control-text);
+    font-family: inherit;
+    font-size: 0.85rem;
+}
+
+.segmented {
+    display: inline-flex;
+    padding: 0.2rem;
+    gap: 0.15rem;
+    border: 1px solid var(--control-border);
+    border-radius: 9px;
+    background: var(--control-bg);
+}
+
+.seg-btn {
+    padding: 0.35rem 0.75rem;
+    border: none;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--control-text);
+    font-family: inherit;
+    font-size: 0.8rem;
+    font-weight: 500;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.seg-btn:hover {
+    background: var(--reaction-count-bg);
+}
+
+.seg-btn.active {
+    background: var(--primary-button-bg);
+    color: var(--primary-button-text);
+}
+
+.filter-checkbox {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    margin-left: auto;
+    font-size: 0.85rem;
+    color: var(--control-text);
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+}
+
+.filter-checkbox input {
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    accent-color: var(--primary-button-bg);
+    cursor: pointer;
 }
 
 .update-list {
@@ -368,8 +442,13 @@ section {
 }
 
 .status-icon {
-    font-size: 0.85em;
-    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.status-icon svg {
+    display: block;
 }
 
 .status-badge.status-on-track {
@@ -432,24 +511,18 @@ section {
 .update-form textarea:focus-visible,
 .update-form select:focus-visible,
 .update-form button:focus-visible,
-.filter-bar select:focus-visible,
+.filter-row select:focus-visible,
+.seg-btn:focus-visible,
+.filter-checkbox:has(input:focus-visible),
 .reaction-button:focus-visible,
 .edit-field select:focus-visible,
 .edit-form textarea:focus-visible,
 .edit-btn:focus-visible,
+.delete-btn:focus-visible,
 .save-btn:focus-visible,
 .cancel-btn:focus-visible {
     outline: 2px solid var(--focus-indicator);
     outline-offset: 2px;
-}
-
-.delete-btn {
-    padding: 0.5rem 1rem;
-    border: none;
-    border-radius: 4px;
-    background: #c62828;
-    color: white;
-    cursor: pointer;
 }
 
 .update-actions {
@@ -543,13 +616,36 @@ section {
     align-items: center;
 }
 
+.edit-btn,
+.delete-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
 .edit-btn {
-    padding: 0.5rem 1rem;
     border: 1px solid var(--control-border);
-    border-radius: 4px;
     background: var(--control-bg);
     color: var(--control-text);
-    cursor: pointer;
+}
+
+.edit-btn:hover {
+    background: var(--reaction-count-bg);
+}
+
+.delete-btn {
+    border: none;
+    background: var(--status-blocked-bg);
+    color: var(--status-text);
+}
+
+.delete-btn:hover {
+    filter: brightness(1.1);
 }
 
 .save-btn {

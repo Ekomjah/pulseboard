@@ -22,6 +22,16 @@ export default function Feed({ auth, refreshToken }) {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showMyUpdates, setShowMyUpdates] = useState(false);
+  const [showJumpToTop, setShowJumpToTop] = useState(false);
+
+  useEffect(() => {
+    function handleScroll() {
+      setShowJumpToTop(window.scrollY > window.innerHeight);
+    }
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -89,6 +99,10 @@ export default function Feed({ auth, refreshToken }) {
 
   function handleDeleted(deleteId) {
     setUpdates((prev) => prev.filter((update) => update._id !== deleteId));
+  }
+
+  function handleJumpToTop() {
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   function handleShowMyUpdates() {
@@ -191,6 +205,17 @@ export default function Feed({ auth, refreshToken }) {
           />
         ))}
       </div>
+
+      {showJumpToTop && (
+        <button
+          type="button"
+          className="jump-to-top"
+          onClick={handleJumpToTop}
+          aria-label="Jump to top"
+        >
+          ↑ Top
+        </button>
+      )}
     </div>
   );
 }

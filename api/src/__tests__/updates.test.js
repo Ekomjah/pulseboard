@@ -25,7 +25,7 @@ async function registerUser(overrides = {}) {
   if ("role" in overrides) {
     throw new Error(
       "registerUser() must not pass role through the public endpoint; " +
-      "promote the user via User.findOneAndUpdate in test setup instead.",
+        "promote the user via User.findOneAndUpdate in test setup instead.",
     );
   }
   const res = await request(app)
@@ -84,6 +84,16 @@ describe("POST /api/updates", () => {
     expect(res.status).toBe(400);
   });
 
+  it("rejects text longer than 1000 characters", async () => {
+    const res = await request(app)
+      .post("/api/updates")
+      .set("Authorization", `Bearer ${token}`)
+      .send({ text: "a".repeat(1001), status: "done" });
+
+    expect(res.status).toBe(400);
+    expect(res.body.error).toBe("text must be 1000 characters or fewer");
+  });
+
   it("rate limits after 15 posts in a window", async () => {
     const makeRequest = () =>
       request(app)
@@ -107,12 +117,16 @@ describe("POST /api/updates", () => {
     const res = await request(app)
       .post("/api/updates")
       .set("Authorization", `Bearer ${token}`)
-      .send({ text: "Shipped the login page", status: "done", tags: ['frontend', 'ui'] });
+      .send({
+        text: "Shipped the login page",
+        status: "done",
+        tags: ["frontend", "ui"],
+      });
 
     expect(res.status).toBe(201);
     expect(res.body.update.text).toBe("Shipped the login page");
     expect(res.body.update.status).toBe("done");
-    expect(res.body.update.tags).toStrictEqual(['frontend', 'ui']);
+    expect(res.body.update.tags).toStrictEqual(["frontend", "ui"]);
     expect(res.body.update.author._id).toBe(userId);
   });
 
@@ -246,18 +260,79 @@ describe("GET /api/updates", () => {
     await request(app)
       .post("/api/updates")
       .set("Authorization", `Bearer ${token}`)
-      .send({ text: "Blocked update", status: "blocked", tags: ['frontend'] });
+      .send({ text: "Blocked update", status: "blocked", tags: ["frontend"] });
 
     await request(app)
       .post("/api/updates")
       .set("Authorization", `Bearer ${token}`)
-      .send({ text: "Done update", status: "done", tags: ['backend'] });
+      .send({ text: "Done update", status: "done", tags: ["backend"] });
 
     const res = await request(app).get("/api/updates?tag=frontend");
 
     expect(res.status).toBe(200);
     expect(res.body.updates).toHaveLength(1);
-    expect(res.body.updates[0].tags[0]).toBe('frontend');
+    expect(res.body.updates[0].tags[0]).toBe("frontend");
+
+  });
+
+  it("filters by q", async () => {
+    await request(app)
+      .post("/api/updates")
+      .set("Authorization", `Bearer ${token}`)
+      .send({ text: "Team meeting today", status: "on-track" });
+
+    await request(app)
+      .post("/api/updates")
+      .set("Authorization", `Bearer ${token}`)
+      .send({ text: "Fixed login bug", status: "done" });
+
+    await request(app)
+      .post("/api/updates")
+      .set("Authorization", `Bearer ${token}`)
+      .send({ text: "Meeting with the client", status: "blocked" });
+
+    const res = await request(app).get("/api/updates?q=MEETING");
+
+    expect(res.status).toBe(200);
+    expect(res.body.updates).toHaveLength(2);
+    expect(res.body.updates[0].text).toBe("Meeting with the client");
+    expect(res.body.updates[1].text).toBe("Team meeting today");
+  });
+
+  it("returns an empty array when q matches no updates", async () => {
+    await request(app)
+      .post("/api/updates")
+      .set("Authorization", `Bearer ${token}`)
+      .send({ text: "Team meeting today", status: "on-track" });
+
+    const res = await request(app).get("/api/updates?q=nonexistent");
+
+    expect(res.status).toBe(200);
+    expect(res.body.updates).toEqual([]);
+  });
+
+  it("combines q with status filter", async () => {
+    await request(app)
+      .post("/api/updates")
+      .set("Authorization", `Bearer ${token}`)
+      .send({ text: "Meeting with frontend team", status: "blocked" });
+
+    await request(app)
+      .post("/api/updates")
+      .set("Authorization", `Bearer ${token}`)
+      .send({ text: "Meeting with backend team", status: "done" });
+
+    await request(app)
+      .post("/api/updates")
+      .set("Authorization", `Bearer ${token}`)
+      .send({ text: "Fixed frontend bug", status: "blocked" });
+
+    const res = await request(app).get("/api/updates?q=meeting&status=blocked");
+
+    expect(res.status).toBe(200);
+    expect(res.body.updates).toHaveLength(1);
+    expect(res.body.updates[0].text).toBe("Meeting with frontend team");
+    expect(res.body.updates[0].status).toBe("blocked");
   });
 });
 
@@ -368,7 +443,6 @@ describe("POST /api/updates/:id/reactions", () => {
   });
 
   it("returns 400 if the emoji string exceeds 8 characters", async () => {
-
     const createRes = await request(app)
       .post("/api/updates")
       .set("Authorization", `Bearer ${token}`)
@@ -479,6 +553,23 @@ describe("DELETE /api/updates/:id/reactions/:reactionId", () => {
 });
 
 describe("PATCH /api/updates/:id", () => {
+  it("rejects text longer than 1000 characters", async () => {
+    const createRes = await request(app)
+      .post("/api/updates")
+      .set("Authorization", `Bearer ${token}`)
+      .send({ text: "Valid update", status: "on-track" });
+
+    const updateId = createRes.body.update._id;
+
+    const res = await request(app)
+      .patch(`/api/updates/${updateId}`)
+      .set("Authorization", `Bearer ${token}`)
+      .send({ text: "a".repeat(1001) });
+
+    expect(res.status).toBe(400);
+    expect(res.body.error).toBe("text must be 1000 characters or fewer");
+  });
+
   it("allows the author to edit their own update", async () => {
     const createRes = await request(app)
       .post("/api/updates")
@@ -585,7 +676,9 @@ describe("PATCH /api/updates/:id", () => {
       });
 
     expect(res.status).toBe(400);
-    expect(res.body.error).toBe("status must be one of: on-track, blocked, done");
+    expect(res.body.error).toBe(
+      "status must be one of: on-track, blocked, done",
+    );
   });
 
   it("rejects an empty text value", async () => {

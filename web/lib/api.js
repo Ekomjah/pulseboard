@@ -92,3 +92,7 @@ export function removeReaction({ updateId, reactionId }, token) {
     token,
   });
 }
+
+export function getStreak(userId, token) {
+  return request(`/api/users/${userId}/streak`, { token });
+}

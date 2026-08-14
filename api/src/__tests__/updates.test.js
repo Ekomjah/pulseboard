@@ -2,6 +2,7 @@ const request = require("supertest");
 const { createApp } = require("../app");
 const User = require("../models/User");
 const { setupTestDB, teardownTestDB, clearTestDB } = require("./setup");
+const { createUpdateOnDay } = require("../utils/stub");
 
 const app = createApp();
 
@@ -357,7 +358,7 @@ describe("POST /api/updates/:id/reactions", () => {
 
   it("returns 404 for a reaction on a nonexistent update", async () => {
 
-    
+
     const res = await request(app)
       .post("/api/updates/64b7f3f3f3f3f3f3f3f3f3f3/reactions")
       .set("Authorization", `Bearer ${token}`)
@@ -378,12 +379,12 @@ describe("POST /api/updates/:id/reactions", () => {
     const res = await request(app)
       .post(`/api/updates/${updateId}/reactions`)
       .set("Authorization", `Bearer ${token}`)
-      .send({emoji: '123456789'})
+      .send({ emoji: '123456789' })
 
     expect(res.status).toBe(400);
     expect(res.body.error).toBe("emoji cannot exceed 8 characters");
   });
-  
+
 });
 
 describe("DELETE /api/updates/:id/reactions/:reactionId", () => {
@@ -608,4 +609,16 @@ describe("PATCH /api/updates/:id", () => {
     expect(res.status).toBe(400);
     expect(res.body.error).toBe("text is required and cannot be empty");
   });
+});
+
+test("GET /api/users/:id/streak returns correct streak", async () => {
+  const user = await User.create({ email: "a@test.com", displayName: "A", passwordHash: "x" });
+
+  await createUpdateOnDay(user._id, 0); // today
+  await createUpdateOnDay(user._id, 1); // yesterday
+  await createUpdateOnDay(user._id, 2); // day before
+
+  const res = await request(app).get(`/api/users/${user._id}/streak`);
+  expect(res.status).toBe(200);
+  expect(res.body.streak).toBe(3);
 });

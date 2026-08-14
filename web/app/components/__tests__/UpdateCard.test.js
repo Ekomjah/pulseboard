@@ -1,11 +1,12 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import UpdateCard, { formatRelativeTime, groupReactions } from "../UpdateCard";
-import { addReaction, removeReaction, editUpdate } from "@/lib/api";
+import { addReaction, removeReaction, editUpdate, getStreak } from "@/lib/api";
 
 jest.mock("@/lib/api", () => ({
   addReaction: jest.fn(),
   removeReaction: jest.fn(),
   editUpdate: jest.fn(),
+  getStreak: jest.fn(),
 }));
 
 describe("formatRelativeTime", () => {
@@ -84,6 +85,7 @@ describe("UpdateCard", () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    getStreak.mockResolvedValue({ streak: 3 });
   });
 
   it("renders the update text and author", () => {
@@ -92,6 +94,23 @@ describe("UpdateCard", () => {
     expect(screen.getByText("Shipped the login page")).toBeInTheDocument();
     expect(screen.getByText("Amina Yusuf")).toBeInTheDocument();
     expect(screen.getByText("Done")).toBeInTheDocument();
+  });
+
+  it("shows the author's streak badge with the streak count", async () => {
+    render(<UpdateCard update={update} auth={null} onUpdated={() => {}} />);
+
+    expect(await screen.findByLabelText("3-day streak")).toBeInTheDocument();
+  });
+
+  it("hides the streak badge when the author has no active streak", async () => {
+    getStreak.mockResolvedValue({ streak: 0 });
+
+    render(<UpdateCard update={update} auth={null} onUpdated={() => {}} />);
+
+    expect(
+      await screen.findByText("Shipped the login page"),
+    ).toBeInTheDocument();
+    expect(screen.queryByLabelText(/day streak/)).not.toBeInTheDocument();
   });
 
   it("renders a relative timestamp with the original dateTime value", () => {

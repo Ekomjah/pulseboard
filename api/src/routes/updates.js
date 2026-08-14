@@ -4,7 +4,6 @@ const { STATUS_VALUES } = require("../models/Update");
 const rateLimit = require("express-rate-limit");
 const { requireAuth, checkRole } = require("../middleware/auth");
 const SORT_VALUES = ["newest", "oldest", "most-reactions"];
-
 const router = express.Router();
 
 const createUpdateLimiter = rateLimit({
@@ -80,6 +79,7 @@ router.get("/:id", async (req, res) => {
   }
 });
 
+// PATCH /api/updates/:id
 router.patch("/:id", requireAuth, async (req, res) => {
   try {
     const { text, status } = req.body;
@@ -205,8 +205,8 @@ router.post(
         return res.status(400).json({ error: "emoji is required" });
       }
 
-      if(emoji.length > 8) {
-        return res.status(400).json({ error: "emoji cannot exceed 8 characters"})
+      if (emoji.length > 8) {
+        return res.status(400).json({ error: "emoji cannot exceed 8 characters" })
       }
 
       const update = await Update.findById(req.params.id);

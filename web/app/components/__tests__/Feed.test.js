@@ -221,3 +221,57 @@ describe("Feed - handleShowMyUpdates", () => {
     ).toBeInTheDocument();
   });
 });
+
+describe("Feed - jump to top button", () => {
+  beforeEach(() => {
+    listUpdates.mockResolvedValue({ updates: [] });
+    window.innerHeight = 800;
+    window.scrollTo = jest.fn();
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+    window.scrollY = 0;
+  });
+
+  it("hides the button near the top and shows it after scrolling down", async () => {
+    render(<Feed auth={null} refreshToken={0} />);
+
+    expect(
+      screen.queryByRole("button", { name: "Jump to top" }),
+    ).not.toBeInTheDocument();
+
+    window.scrollY = 1000;
+    fireEvent.scroll(window);
+
+    expect(
+      await screen.findByRole("button", { name: "Jump to top" }),
+    ).toBeInTheDocument();
+
+    window.scrollY = 0;
+    fireEvent.scroll(window);
+
+    await waitFor(() =>
+      expect(
+        screen.queryByRole("button", { name: "Jump to top" }),
+      ).not.toBeInTheDocument(),
+    );
+  });
+
+  it("smoothly scrolls to the top when clicked", async () => {
+    render(<Feed auth={null} refreshToken={0} />);
+
+    window.scrollY = 1000;
+    fireEvent.scroll(window);
+
+    const button = await screen.findByRole("button", {
+      name: "Jump to top",
+    });
+    fireEvent.click(button);
+
+    expect(window.scrollTo).toHaveBeenCalledWith({
+      top: 0,
+      behavior: "smooth",
+    });
+  });
+});

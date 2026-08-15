@@ -6,9 +6,8 @@ async function createUpdateOnDay(authorId, daysAgo) {
     author: authorId,
     text: "test update",
     status: "on-track",
+    createdAt: subDays(new Date(), daysAgo),
   });
-  update.createdAt = subDays(new Date(), daysAgo);
-  await update.save({ timestamps: false });
   return update;
 }
 

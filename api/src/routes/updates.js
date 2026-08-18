@@ -6,20 +6,6 @@ const { requireAuth, optionalAuth, checkRole } = require("../middleware/auth");
 const SORT_VALUES = ["newest", "oldest", "most-reactions"];
 const router = express.Router();
 
-function normalizeTags(tags) {
-  if (!Array.isArray(tags)) {
-    return [];
-  }
-
-  return [
-    ...new Set(
-      tags
-        .filter((tag) => typeof tag === "string" && tag.trim() !== "")
-        .map((tag) => tag.trim().toLowerCase().replace(/\s+/g, " ")),
-    ),
-  ];
-}
-
 const createUpdateLimiter = rateLimit({
   windowMs: 60 * 1000,
   limit: 15,
@@ -31,6 +17,37 @@ const createUpdateLimiter = rateLimit({
   },
   keyGenerator: (req) => req.user?.id,
 });
+
+function validateTags(tags) {
+  if (!Array.isArray(tags)) {
+    return [];
+  }
+
+  const maxTags = 10;
+  const maxTagLength = 30;
+
+  if (tags.length > maxTags) {
+    return {
+      error: `Maximum ${maxTags} tags are allowed.`,
+    };
+  }
+
+  if (
+    tags.some((tag) => typeof tag !== "string" || tag.length > maxTagLength)
+  ) {
+    return {
+      error: `Maximum ${maxTagLength} characters are allowed for a tag.`,
+    };
+  }
+
+  return [
+    ...new Set(
+      tags
+        .filter((tag) => typeof tag === "string" && tag.trim() !== "")
+        .map((tag) => tag.trim().toLowerCase().replace(/\s+/g, " ")),
+    ),
+  ];
+}
 
 // Legacy records predate the visibility field, so treat anything but an explicit "leads" as visible.
 function isVisibleToRequester(update, user) {
@@ -458,39 +475,6 @@ router.post(
         return res.status(400).json({
           error: `visibility must be one of: ${VISIBILITY_VALUES.join(", ")}`,
         });
-      }
-
-      function validateTags(tags) {
-        if (!Array.isArray(tags)) {
-          return [];
-        }
-
-        const maxTags = 10;
-        const maxTagLength = 30;
-
-        if (tags.length > maxTags) {
-          return {
-            error: `Maximum ${maxTags} tags are allowed.`,
-          };
-        }
-
-        if (
-          tags.some(
-            (tag) => typeof tag !== "string" || tag.length > maxTagLength,
-          )
-        ) {
-          return {
-            error: `Maximum ${maxTagLength} characters are allowed for a tag.`,
-          };
-        }
-
-        return [
-          ...new Set(
-            tags
-              .filter((tag) => typeof tag === "string" && tag.trim() !== "")
-              .map((tag) => tag.trim().toLowerCase().replace(/\s+/g, " ")),
-          ),
-        ];
       }
 
       const validatedTags = validateTags(tags);

@@ -234,7 +234,7 @@ describe("GET /api/updates", () => {
       .set("Authorization", `Bearer ${token}`)
       .send({ text: "Second most reacted", status: "blocked" });
 
-    const third = await request(app)
+    const _third = await request(app)
       .post("/api/updates")
       .set("Authorization", `Bearer ${token}`)
       .send({ text: "No reactions", status: "blocked" });
@@ -719,7 +719,7 @@ describe("GET /api/updates/leaderboard", () => {
   });
 
   it("includes updates inside the requested window and excludes older updates", async () => {
-    const recentUpdate = await request(app)
+    const _recentUpdate = await request(app)
       .post("/api/updates")
       .set("Authorization", `Bearer ${token}`)
       .send({

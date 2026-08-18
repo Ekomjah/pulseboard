@@ -96,6 +96,51 @@ describe("UpdateCard", () => {
     expect(screen.getByText("Done")).toBeInTheDocument();
   });
 
+  it("renders the initials badge for a one word author name", () => {
+    render(
+      <UpdateCard
+        update={{
+          ...update,
+          author: { ...update.author, displayName: "Amina" },
+        }}
+        auth={null}
+        onUpdated={() => {}}
+      />,
+    );
+
+    expect(screen.getByText("A")).toBeInTheDocument();
+  });
+
+  it("renders the initials badge for a multi-word author name", () => {
+    render(
+      <UpdateCard
+        update={{
+          ...update,
+          author: { ...update.author, displayName: "Amina Fatima Yusuf" },
+        }}
+        auth={null}
+        onUpdated={() => {}}
+      />,
+    );
+
+    expect(screen.getByText("AF")).toBeInTheDocument();
+  });
+
+  it("renders a mention as a styled span", () => {
+    render(
+      <UpdateCard
+        update={{ ...update, text: "Nice work @amina" }}
+        auth={null}
+        onUpdated={() => {}}
+      />,
+    );
+
+    const mention = screen.getByText("@amina");
+    expect(mention).toBeInTheDocument();
+    expect(mention.tagName).toBe("SPAN");
+    expect(mention).toHaveClass("mention");
+  });
+
   it("shows the author's streak badge with the streak count", async () => {
     render(<UpdateCard update={update} auth={null} onUpdated={() => {}} />);
 

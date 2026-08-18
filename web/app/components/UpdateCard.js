@@ -214,6 +214,23 @@ export default function UpdateCard({ update, auth, onUpdated, onDeleted }) {
     }
   }
 
+  function getAuthorInitials(update) {
+    const authorName = update.author?.displayName;
+
+    if (!authorName) {
+      return "U"; // U is for Unknown
+    }
+
+    const initials = authorName
+      .split(" ")
+      .map((word) => word.slice(0, 1))
+      .join("")
+      .slice(0, 2)
+      .toUpperCase();
+
+    return initials;
+  }
+
   return (
     <article className={`update-card status-${update.status}`}>
       <header>
@@ -245,11 +262,19 @@ export default function UpdateCard({ update, auth, onUpdated, onDeleted }) {
                 </span>
               )}
             </div>
-
-            <time dateTime={update.createdAt}>
-              {formatRelativeTime(update.createdAt)}
-            </time>
+            <div className="update-meta-subinfo">
+              <time dateTime={update.createdAt}>
+                {formatRelativeTime(update.createdAt)}
+              </time>
+              {!!update.editedAt && (
+                <>
+                  <span className="meta-separator">·</span>
+                  <span className="edited-indicator">(edited)</span>
+                </>
+              )}
+            </div>
           </div>
+          <div className="initials-badge">{getAuthorInitials(update)}</div>
         </div>
         {isEditing ? (
           <div className="edit-field">
@@ -343,7 +368,8 @@ export default function UpdateCard({ update, auth, onUpdated, onDeleted }) {
                 <Pencil size={16} strokeWidth={2} />
               </button>
             )}
-            {auth?.user?.role === "LEAD" && (
+            {(auth?.user?.role === "LEAD" ||
+              auth?.user?._id === update.author?._id) && (
               <button
                 className="delete-btn"
                 type="button"

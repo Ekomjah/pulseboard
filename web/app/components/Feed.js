@@ -12,45 +12,94 @@ const STATUS_LABELS = {
   done: "Done",
 };
 
-export default function Feed({ auth, refreshToken }) {
+export default function Feed({ auth, refreshToken, socket }) {
   const [updates, setUpdates] = useState([]);
   const [allUpdates, setAllUpdates] = useState([]);
+
   const [statusFilter, setStatusFilter] = useState("");
   const [authorFilter, setAuthorFilter] = useState("");
   const [tagFilter, setTagFilter] = useState("");
   const [sortOrder, setSortOrder] = useState("newest");
+
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  const [page, setPage] = useState(1);
+  const [hasNextPage, setHasNextPage] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
+
+  const LIMIT = 10;
+
   const [showMyUpdates, setShowMyUpdates] = useState(false);
   const [showJumpToTop, setShowJumpToTop] = useState(false);
 
+  // Jump-to-top button
   useEffect(() => {
     function handleScroll() {
       setShowJumpToTop(window.scrollY > window.innerHeight);
     }
+
     window.addEventListener("scroll", handleScroll, { passive: true });
     handleScroll();
-    return () => window.removeEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
   }, []);
+
+  // Load the current feed
+  //* Attach and detach event handlers for websocket (if initialized)
+  useEffect(() => {
+    if (!socket) return;
+
+    socket.on("POST:update", handleRcvdUpdate);
+    socket.on("POST:reaction", handleRcvdReaction);
+
+    return () => {
+      socket.off("POST:update", handleRcvdUpdate);
+      socket.off("POST:reaction", handleRcvdReaction);
+    };
+  }, [socket]);
 
   useEffect(() => {
     let cancelled = false;
+
     setLoading(true);
-    listUpdates({
+    setPage(1);
+    setError(null);
+
+    const filters = {
       status: statusFilter || undefined,
       author: authorFilter || undefined,
-      tag: tagFilter || undefined,
       sort: sortOrder,
-    })
-      .then(({ updates: fetched }) => {
-        if (!cancelled) setUpdates(fetched);
+    };
+
+    if (tagFilter) {
+      filters.tag = tagFilter;
+    }
+
+    listUpdates(filters)
+      .then(({ updates: fetched = [], pagination }) => {
+        if (cancelled) return;
+
+        setUpdates(fetched);
+        setHasNextPage(pagination?.hasNextPage ?? false);
+
+        if (!statusFilter && !authorFilter && !tagFilter) {
+          setAllUpdates(fetched);
+        }
       })
       .catch((err) => {
-        if (!cancelled) setError(err.message);
+        if (!cancelled) {
+          setError(err.message);
+        }
       })
       .finally(() => {
-        if (!cancelled) setLoading(false);
+        if (!cancelled) {
+          setLoading(false);
+        }
       });
+
     return () => {
       cancelled = true;
     };
@@ -60,11 +109,15 @@ export default function Feed({ auth, refreshToken }) {
     let cancelled = false;
 
     listUpdates()
-      .then(({ updates: fetched }) => {
-        if (!cancelled) setAllUpdates(fetched);
+      .then(({ updates: fetched = [] }) => {
+        if (!cancelled) {
+          setAllUpdates(fetched);
+        }
       })
       .catch((err) => {
-        if (!cancelled) setError(err.message);
+        if (!cancelled) {
+          setError(err.message);
+        }
       });
 
     return () => {
@@ -72,42 +125,112 @@ export default function Feed({ auth, refreshToken }) {
     };
   }, [refreshToken]);
 
+  // Load next page
+  async function loadMore() {
+    if (loadingMore || !hasNextPage) {
+      return;
+    }
+
+    setLoadingMore(true);
+    setError(null);
+
+    try {
+      const nextPage = page + 1;
+
+      const params = {
+        status: statusFilter || undefined,
+        author: authorFilter || undefined,
+        sort: sortOrder,
+        page: nextPage,
+        limit: LIMIT,
+      };
+
+      if (tagFilter) {
+        params.tag = tagFilter;
+      }
+
+      const { updates: fetched = [], pagination } = await listUpdates(params);
+
+      setUpdates((prev) => [...prev, ...fetched]);
+      setPage(nextPage);
+      setHasNextPage(pagination?.hasNextPage ?? false);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoadingMore(false);
+    }
+  }
+
   const authors = useMemo(() => {
     const map = new Map();
 
-    for (const u of allUpdates) {
-      if (u.author?._id) {
-        map.set(u.author._id, u.author.displayName);
+    for (const update of allUpdates) {
+      if (update.author?._id) {
+        map.set(update.author._id, update.author.displayName);
       }
     }
+
     return Array.from(map.entries());
   }, [allUpdates]);
 
   const tags = useMemo(() => {
     const tagsArray = [];
-    for (const u of updates) {
-      tagsArray.push(...(u.tags ?? []));
+
+    for (const update of allUpdates) {
+      tagsArray.push(...(update.tags ?? []));
     }
+
     return [...new Set(tagsArray)];
-  }, [updates]);
+  }, [allUpdates]);
+
+  //* Handler for incoming POST:update event on websocket
+  function handleRcvdUpdate(update) {
+    setAllUpdates((prev) => {
+      //? If update already exists because current user posted it, then don't handle websocket response
+      if (prev.some((u) => u._id === update._id)) return prev;
+      return [update, ...prev];
+    });
+  }
+
+  //* Handler for incoming POST:reaction event on websocket
+  //? Reaction isn't duplicated because duplicates are filtered out already in backend logic
+  function handleRcvdReaction({ updateId, reaction }) {
+    setAllUpdates((prev) =>
+      prev.map((u) =>
+        u._id === updateId
+          ? { ...u, reactions: [...(u.reactions || []), reaction] }
+          : u,
+      ),
+    );
+  }
 
   function handleUpdated(updated) {
     setUpdates((prev) =>
-      prev.map((u) => (u._id === updated._id ? updated : u)),
+      prev.map((update) => (update._id === updated._id ? updated : update)),
+    );
+
+    setAllUpdates((prev) =>
+      prev.map((update) => (update._id === updated._id ? updated : update)),
     );
   }
 
   function handleDeleted(deleteId) {
     setUpdates((prev) => prev.filter((update) => update._id !== deleteId));
+
+    setAllUpdates((prev) => prev.filter((update) => update._id !== deleteId));
   }
 
   function handleJumpToTop() {
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
   }
 
   function handleShowMyUpdates() {
     try {
       setShowMyUpdates(!showMyUpdates);
+
       if (!showMyUpdates) {
         setAuthorFilter(auth ? auth.user._id : "");
       } else {
@@ -185,10 +308,30 @@ export default function Feed({ auth, refreshToken }) {
       </div>
 
       {error && <p className="error">{error}</p>}
+
       {loading && <p className="hint">Loading feed...</p>}
-      {!loading && updates.length === 0 && (
-        <p className="hint">No updates yet.</p>
-      )}
+
+      {!loading &&
+        updates.length === 0 &&
+        (statusFilter || authorFilter || tagFilter ? (
+          <div>
+            <p className="hint">No updates match your filters.</p>
+
+            <button
+              type="button"
+              onClick={() => {
+                setStatusFilter("");
+                setAuthorFilter("");
+                setTagFilter("");
+                setShowMyUpdates(false);
+              }}
+            >
+              Clear filters
+            </button>
+          </div>
+        ) : (
+          <p className="hint">No updates yet.</p>
+        ))}
 
       <div className="update-list">
         {updates.map((update) => (
@@ -201,6 +344,12 @@ export default function Feed({ auth, refreshToken }) {
           />
         ))}
       </div>
+
+      {hasNextPage && (
+        <button onClick={loadMore} disabled={loadingMore}>
+          {loadingMore ? "Loading..." : "Load more"}
+        </button>
+      )}
 
       {showJumpToTop && (
         <button

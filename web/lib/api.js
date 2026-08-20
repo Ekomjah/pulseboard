@@ -53,7 +53,6 @@ export function listUpdates({
   page = 1,
   limit = 10,
 } = {}) {
-
   const params = new URLSearchParams();
 
   if (author) params.set("author", author);
@@ -111,7 +110,7 @@ export function togglePin({ updateId, pinned }, token) {
     method: "PATCH",
     body: { pinned },
     token,
-  })
+  });
 }
 
 export function getStreak(userId, token) {

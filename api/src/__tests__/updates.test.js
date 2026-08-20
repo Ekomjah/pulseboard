@@ -4,6 +4,7 @@ const User = require("../models/User");
 const Update = require("../models/Update");
 const mongoose = require("mongoose");
 const { setupTestDB, teardownTestDB, clearTestDB } = require("./setup");
+const { createUpdateOnDay } = require("../utils/stub");
 
 const app = createApp();
 
@@ -1364,7 +1365,7 @@ describe("PATCH /api/updates/:id/pin", () => {
     expect(resPin.body.update._id).toBe(updateId);
     expect(resPin.body.update.pinned).toBe(true);
     expect(resPin.body.update.author._id).toBe(member.user._id);
-    
+
     // Lead unpinning an update
     const resUnpin = await request(app)
     .patch(`/api/updates/${updateId}/pin`)
@@ -1372,7 +1373,7 @@ describe("PATCH /api/updates/:id/pin", () => {
     .send({
       pinned: false,
     });
-    
+
     expect(resUnpin.status).toBe(200);
     expect(resUnpin.body.update._id).toBe(updateId);
     expect(resUnpin.body.update.pinned).toBe(false);
@@ -1403,7 +1404,7 @@ describe("PATCH /api/updates/:id/pin", () => {
       .post("/api/updates/")
       .set("Authorization", `Bearer ${member.token}`)
       .send({ text: "First Update", status: "on-track" });
-      
+
     const firstUpdateId = memberCreateRes1.body.update._id;
 
     const memberCreateRes2 = await request(app)
@@ -1441,7 +1442,7 @@ describe("PATCH /api/updates/:id/pin", () => {
     });
 
     const token = loginRes.body.token;
-    
+
     const createRes = await request(app)
       .post("/api/updates/")
       .set("Authorization", `Bearer ${token}`)
@@ -1462,4 +1463,20 @@ describe("PATCH /api/updates/:id/pin", () => {
 
     expect(pinRes.status).toBe(404);
   })
+});
+
+test("GET /api/users/:id/streak returns correct streak", async () => {
+  const user = await User.create({
+    email: "a@test.com",
+    displayName: "A",
+    passwordHash: "x",
+  });
+
+  await createUpdateOnDay(user._id, 0); // today
+  await createUpdateOnDay(user._id, 1); // yesterday
+  await createUpdateOnDay(user._id, 2); // day before
+
+  const res = await request(app).get(`/api/users/${user._id}/streak`);
+  expect(res.status).toBe(200);
+  expect(res.body.streak).toBe(3);
 });

@@ -28,11 +28,11 @@ export default function UpdateForm({ auth, onPosted }) {
       setText(draft.text ?? "");
       setStatus(draft.status ?? "on-track");
     }
-  }, [auth?.user?._id]);
+  }, [auth?.user?._id, auth]);
 
   useEffect(() => {
     saveDraft(auth?.user?._id, { text, status });
-  }, [text, status]);
+  }, [text, status, auth?.user?._id]);
 
   useEffect(() => {
     const queue = localStorage.getItem("queuedMessages");
@@ -50,6 +50,7 @@ export default function UpdateForm({ auth, onPosted }) {
     }, 3000);
 
     return () => clearInterval(reconnectInterval);
+    //eslint-disable-next-line
   }, [messageQueue]);
 
   function modifyQueue(message) {

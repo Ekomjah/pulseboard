@@ -27,7 +27,7 @@ async function registerUser(overrides = {}) {
   if ("role" in overrides) {
     throw new Error(
       "registerUser() must not pass role through the public endpoint; " +
-      "promote the user via User.findOneAndUpdate in test setup instead.",
+        "promote the user via User.findOneAndUpdate in test setup instead.",
     );
   }
   const res = await request(app)
@@ -224,73 +224,76 @@ describe("GET /api/updates", () => {
   });
 
   it("sorts by reactions before applying pagination", async () => {
-  const first = await request(app)
-    .post("/api/updates")
-    .set("Authorization", `Bearer ${token}`)
-    .send({ text: "Most reacted", status: "blocked" });
+    const first = await request(app)
+      .post("/api/updates")
+      .set("Authorization", `Bearer ${token}`)
+      .send({ text: "Most reacted", status: "blocked" });
 
-  const second = await request(app)
-    .post("/api/updates")
-    .set("Authorization", `Bearer ${token}`)
-    .send({ text: "Second most reacted", status: "blocked" });
+    const second = await request(app)
+      .post("/api/updates")
+      .set("Authorization", `Bearer ${token}`)
+      .send({ text: "Second most reacted", status: "blocked" });
 
-  const third = await request(app)
-    .post("/api/updates")
-    .set("Authorization", `Bearer ${token}`)
-    .send({ text: "No reactions", status: "blocked" });
+    const third = await request(app)
+      .post("/api/updates")
+      .set("Authorization", `Bearer ${token}`)
+      .send({ text: "No reactions", status: "blocked" });
 
-  const firstId = first.body.update._id;
-  const secondId = second.body.update._id;
+    const firstId = first.body.update._id;
+    const secondId = second.body.update._id;
 
-  // First update gets 2 reactions
-  await request(app)
-    .post(`/api/updates/${firstId}/reactions`)
-    .set("Authorization", `Bearer ${token}`)
-    .send({ emoji: "✅" });
+    // First update gets 2 reactions
+    await request(app)
+      .post(`/api/updates/${firstId}/reactions`)
+      .set("Authorization", `Bearer ${token}`)
+      .send({ emoji: "✅" });
 
-  await request(app)
-    .post(`/api/updates/${firstId}/reactions`)
-    .set("Authorization", `Bearer ${token}`)
-    .send({ emoji: "🔥" });
+    await request(app)
+      .post(`/api/updates/${firstId}/reactions`)
+      .set("Authorization", `Bearer ${token}`)
+      .send({ emoji: "🔥" });
 
-  // Second update gets 1 reaction
-  await request(app)
-    .post(`/api/updates/${secondId}/reactions`)
-    .set("Authorization", `Bearer ${token}`)
-    .send({ emoji: "👍" });
+    // Second update gets 1 reaction
+    await request(app)
+      .post(`/api/updates/${secondId}/reactions`)
+      .set("Authorization", `Bearer ${token}`)
+      .send({ emoji: "👍" });
 
-  // Page 1 should contain the most-reacted update
-  const page1 = await request(app)
-    .get("/api/updates?sort=most-reactions&page=1&limit=1");
+    // Page 1 should contain the most-reacted update
+    const page1 = await request(app).get(
+      "/api/updates?sort=most-reactions&page=1&limit=1",
+    );
 
-  expect(page1.status).toBe(200);
-  expect(page1.body.updates).toHaveLength(1);
-  expect(page1.body.updates[0].text).toBe("Most reacted");
-  expect(page1.body.pagination.page).toBe(1);
-  expect(page1.body.pagination.limit).toBe(1);
-  expect(page1.body.pagination.hasNextPage).toBe(true);
+    expect(page1.status).toBe(200);
+    expect(page1.body.updates).toHaveLength(1);
+    expect(page1.body.updates[0].text).toBe("Most reacted");
+    expect(page1.body.pagination.page).toBe(1);
+    expect(page1.body.pagination.limit).toBe(1);
+    expect(page1.body.pagination.hasNextPage).toBe(true);
 
-  // Page 2 should contain the second-most-reacted update,
-  // proving sorting happened before pagination.
-  const page2 = await request(app)
-    .get("/api/updates?sort=most-reactions&page=2&limit=1");
+    // Page 2 should contain the second-most-reacted update,
+    // proving sorting happened before pagination.
+    const page2 = await request(app).get(
+      "/api/updates?sort=most-reactions&page=2&limit=1",
+    );
 
-  expect(page2.status).toBe(200);
-  expect(page2.body.updates).toHaveLength(1);
-  expect(page2.body.updates[0].text).toBe("Second most reacted");
-  expect(page2.body.pagination.page).toBe(2);
-  expect(page2.body.pagination.limit).toBe(1);
-  expect(page2.body.pagination.hasNextPage).toBe(true);
+    expect(page2.status).toBe(200);
+    expect(page2.body.updates).toHaveLength(1);
+    expect(page2.body.updates[0].text).toBe("Second most reacted");
+    expect(page2.body.pagination.page).toBe(2);
+    expect(page2.body.pagination.limit).toBe(1);
+    expect(page2.body.pagination.hasNextPage).toBe(true);
 
-  // Page 3 should contain the update with no reactions.
-  const page3 = await request(app)
-    .get("/api/updates?sort=most-reactions&page=3&limit=1");
+    // Page 3 should contain the update with no reactions.
+    const page3 = await request(app).get(
+      "/api/updates?sort=most-reactions&page=3&limit=1",
+    );
 
-  expect(page3.status).toBe(200);
-  expect(page3.body.updates).toHaveLength(1);
-  expect(page3.body.updates[0].text).toBe("No reactions");
-  expect(page3.body.pagination.hasNextPage).toBe(false);
-});
+    expect(page3.status).toBe(200);
+    expect(page3.body.updates).toHaveLength(1);
+    expect(page3.body.updates[0].text).toBe("No reactions");
+    expect(page3.body.pagination.hasNextPage).toBe(false);
+  });
   it("sorts by reactions before applying pagination", async () => {
     const mostReacted = await request(app)
       .post("/api/updates")
@@ -323,8 +326,9 @@ describe("GET /api/updates", () => {
       .set("Authorization", `Bearer ${token}`)
       .send({ emoji: "🚀" });
 
-    const res = await request(app)
-      .get("/api/updates?sort=most-reactions&page=1&limit=1");
+    const res = await request(app).get(
+      "/api/updates?sort=most-reactions&page=1&limit=1",
+    );
 
     expect(res.status).toBe(200);
     expect(res.body.updates).toHaveLength(1);
@@ -1173,134 +1177,127 @@ describe("PATCH /api/updates/:id", () => {
     expect(res.body.error).toBe("text is required and cannot be empty");
   });
 
-// EXPORT TESTS - GET /api/updates/export
-describe("GET /api/updates/export", () => {
-  let authToken;
+  // EXPORT TESTS - GET /api/updates/export
+  describe("GET /api/updates/export", () => {
+    let authToken;
 
-  beforeEach(async () => {
-    const registerRes = await request(app).post("/api/auth/register").send({
-      email: "exportuser@example.com",
-      password: "password123",
-      displayName: "Export User",
-    });
-    authToken = registerRes.body.token;
-
-    await request(app)
-      .post("/api/updates")
-      .set("Authorization", `Bearer ${authToken}`)
-      .send({
-        text: "Test update for export",
-        status: "on-track",
+    beforeEach(async () => {
+      const registerRes = await request(app).post("/api/auth/register").send({
+        email: "exportuser@example.com",
+        password: "password123",
+        displayName: "Export User",
       });
-  });
+      authToken = registerRes.body.token;
 
-  test("returns 400 if start date is missing", async () => {
-    const res = await request(app)
-      .get("/api/updates/export")
-      .query({ end: "2026-12-31" });
+      await request(app)
+        .post("/api/updates")
+        .set("Authorization", `Bearer ${authToken}`)
+        .send({
+          text: "Test update for export",
+          status: "on-track",
+        });
+    });
 
-    expect(res.status).toBe(400);
-    expect(res.body.error).toBe("Both start and end dates are required");
-  });
+    test("returns 400 if start date is missing", async () => {
+      const res = await request(app)
+        .get("/api/updates/export")
+        .query({ end: "2026-12-31" });
 
-  test("returns 400 if end date is missing", async () => {
-    const res = await request(app)
-      .get("/api/updates/export")
-      .query({ start: "2026-01-01" });
+      expect(res.status).toBe(400);
+      expect(res.body.error).toBe("Both start and end dates are required");
+    });
 
-    expect(res.status).toBe(400);
-    expect(res.body.error).toBe("Both start and end dates are required");
-  });
+    test("returns 400 if end date is missing", async () => {
+      const res = await request(app)
+        .get("/api/updates/export")
+        .query({ start: "2026-01-01" });
 
-  test("returns 400 if start date is after end date", async () => {
-    const res = await request(app)
-      .get("/api/updates/export")
-      .query({
+      expect(res.status).toBe(400);
+      expect(res.body.error).toBe("Both start and end dates are required");
+    });
+
+    test("returns 400 if start date is after end date", async () => {
+      const res = await request(app).get("/api/updates/export").query({
         start: "2026-12-31",
         end: "2026-01-01",
       });
 
-    expect(res.status).toBe(400);
-    expect(res.body.error).toBe("Start date must be before end date");
-  });
+      expect(res.status).toBe(400);
+      expect(res.body.error).toBe("Start date must be before end date");
+    });
 
-  test("returns 400 for invalid date format", async () => {
-    const res = await request(app)
-      .get("/api/updates/export")
-      .query({
+    test("returns 400 for invalid date format", async () => {
+      const res = await request(app).get("/api/updates/export").query({
         start: "invalid-date",
         end: "2026-12-31",
       });
 
-    expect(res.status).toBe(400);
-    expect(res.body.error).toBe("Invalid date format. Use ISO date strings (YYYY-MM-DD)");
-  });
+      expect(res.status).toBe(400);
+      expect(res.body.error).toBe(
+        "Invalid date format. Use ISO date strings (YYYY-MM-DD)",
+      );
+    });
 
-  test("returns updates as JSON by default", async () => {
-    const res = await request(app)
-      .get("/api/updates/export")
-      .query({
+    test("returns updates as JSON by default", async () => {
+      const res = await request(app).get("/api/updates/export").query({
         start: "2026-01-01",
         end: "2026-12-31",
       });
 
-    expect(res.status).toBe(200);
-    expect(res.body).toHaveProperty("count");
-    expect(res.body).toHaveProperty("data");
-    expect(Array.isArray(res.body.data)).toBe(true);
-    expect(res.headers["content-type"]).toContain("application/json");
-  });
+      expect(res.status).toBe(200);
+      expect(res.body).toHaveProperty("count");
+      expect(res.body).toHaveProperty("data");
+      expect(Array.isArray(res.body.data)).toBe(true);
+      expect(res.headers["content-type"]).toContain("application/json");
+    });
 
-  test("returns updates as CSV when format=csv", async () => {
-    const res = await request(app)
-      .get("/api/updates/export")
-      .query({
+    test("returns updates as CSV when format=csv", async () => {
+      const res = await request(app).get("/api/updates/export").query({
         start: "2026-01-01",
         end: "2026-12-31",
         format: "csv",
       });
 
-    expect(res.status).toBe(200);
-    expect(res.headers["content-type"]).toContain("text/csv");
-    expect(res.headers["content-disposition"]).toContain("filename=updates_export_");
-    expect(res.text).toContain("Author,Text,Status,Created At,Reaction Count");
-  });
+      expect(res.status).toBe(200);
+      expect(res.headers["content-type"]).toContain("text/csv");
+      expect(res.headers["content-disposition"]).toContain(
+        "filename=updates_export_",
+      );
+      expect(res.text).toContain(
+        "Author,Text,Status,Created At,Reaction Count",
+      );
+    });
 
-  test("returns empty range message when no updates found", async () => {
-    const res = await request(app)
-      .get("/api/updates/export")
-      .query({
+    test("returns empty range message when no updates found", async () => {
+      const res = await request(app).get("/api/updates/export").query({
         start: "2020-01-01",
         end: "2020-01-02",
       });
 
-    expect(res.status).toBe(200);
-    expect(res.body.message).toBe("No updates found in the given date range");
-    expect(res.body.count).toBe(0);
-    expect(res.body.data).toEqual([]);
-  });
+      expect(res.status).toBe(200);
+      expect(res.body.message).toBe("No updates found in the given date range");
+      expect(res.body.count).toBe(0);
+      expect(res.body.data).toEqual([]);
+    });
 
-  test("returns updates with only required fields", async () => {
-    const res = await request(app)
-      .get("/api/updates/export")
-      .query({
+    test("returns updates with only required fields", async () => {
+      const res = await request(app).get("/api/updates/export").query({
         start: "2026-01-01",
         end: "2026-12-31",
       });
 
-    expect(res.status).toBe(200);
-    expect(res.body.data.length).toBeGreaterThan(0);
-    const firstUpdate = res.body.data[0];
-    expect(firstUpdate).toHaveProperty("author");
-    expect(firstUpdate).toHaveProperty("text");
-    expect(firstUpdate).toHaveProperty("status");
-    expect(firstUpdate).toHaveProperty("createdAt");
-    expect(firstUpdate).toHaveProperty("reactionCount");
-    expect(firstUpdate).not.toHaveProperty("email");
-    expect(firstUpdate).not.toHaveProperty("tags");
+      expect(res.status).toBe(200);
+      expect(res.body.data.length).toBeGreaterThan(0);
+      const firstUpdate = res.body.data[0];
+      expect(firstUpdate).toHaveProperty("author");
+      expect(firstUpdate).toHaveProperty("text");
+      expect(firstUpdate).toHaveProperty("status");
+      expect(firstUpdate).toHaveProperty("createdAt");
+      expect(firstUpdate).toHaveProperty("reactionCount");
+      expect(firstUpdate).not.toHaveProperty("email");
+      expect(firstUpdate).not.toHaveProperty("tags");
+    });
   });
-});
-
 });
 
 describe("PATCH /api/updates/:id/pin", () => {
@@ -1349,7 +1346,7 @@ describe("PATCH /api/updates/:id/pin", () => {
     const memberCreateRes = await request(app)
       .post("/api/updates/")
       .set("Authorization", `Bearer ${member.token}`)
-      .send({text: "Protected Update", status: "on-track"});
+      .send({ text: "Protected Update", status: "on-track" });
 
     const updateId = memberCreateRes.body.update._id;
 
@@ -1368,21 +1365,19 @@ describe("PATCH /api/updates/:id/pin", () => {
 
     // Lead unpinning an update
     const resUnpin = await request(app)
-    .patch(`/api/updates/${updateId}/pin`)
-    .set("Authorization", `Bearer ${leadToken}`)
-    .send({
-      pinned: false,
-    });
+      .patch(`/api/updates/${updateId}/pin`)
+      .set("Authorization", `Bearer ${leadToken}`)
+      .send({
+        pinned: false,
+      });
 
     expect(resUnpin.status).toBe(200);
     expect(resUnpin.body.update._id).toBe(updateId);
     expect(resUnpin.body.update.pinned).toBe(false);
     expect(resUnpin.body.update.author._id).toBe(member.user._id);
-
-
   });
 
-  it("tests the pinned update was always on the top", async() => {
+  it("tests the pinned update was always on the top", async () => {
     await User.findOneAndUpdate(
       { email: "author@example.com" },
       { role: "LEAD" },
@@ -1432,8 +1427,8 @@ describe("PATCH /api/updates/:id/pin", () => {
 
   it("returns 404 when pinning an non-existing update", async () => {
     await User.findOneAndUpdate(
-      {email: "author@example.com"},
-      {role: "LEAD"},
+      { email: "author@example.com" },
+      { role: "LEAD" },
     );
 
     const loginRes = await request(app).post("/api/auth/login").send({
@@ -1462,7 +1457,7 @@ describe("PATCH /api/updates/:id/pin", () => {
       });
 
     expect(pinRes.status).toBe(404);
-  })
+  });
 });
 
 test("GET /api/users/:id/streak returns correct streak", async () => {
@@ -1477,6 +1472,7 @@ test("GET /api/users/:id/streak returns correct streak", async () => {
   await createUpdateOnDay(user._id, 2); // day before
 
   const res = await request(app).get(`/api/users/${user._id}/streak`);
+  console.log(res.body);
   expect(res.status).toBe(200);
   expect(res.body.streak).toBe(3);
 });

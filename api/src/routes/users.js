@@ -2,7 +2,7 @@ const express = require("express");
 const User = require("../models/User");
 const { requireAuth } = require("../middleware/auth");
 const { calculateStreak } = require("../utils/streak");
-
+const Update = require("../models/Update");
 const router = express.Router();
 
 // GET /api/users

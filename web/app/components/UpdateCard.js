@@ -130,7 +130,7 @@ export default function UpdateCard({ update, auth, onUpdated, onDeleted }) {
     getStreak(update.author._id, auth?.token)
       .then((data) => setStreak(data.streak))
       .catch(() => setStreak(null));
-  }, [update.author?._id, auth?.token]);
+  }, [update.author?._id]);
 
   async function handleReactionToggle(emoji) {
     if (!auth) return;

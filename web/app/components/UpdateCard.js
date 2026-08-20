@@ -1,6 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Flame } from "lucide-react";
+import { getStreak } from "@/lib/api";
+
 import {
   addReaction,
   deleteUpdate,
@@ -105,6 +108,7 @@ export default function UpdateCard({ update, auth, onUpdated, onDeleted }) {
   const [editText, setEditText] = useState(update.text);
   const [editStatus, setEditStatus] = useState(update.status);
   const [saving, setSaving] = useState(false);
+  const [streak, setStreak] = useState(null);
   const reactionGroups = groupReactions(update.reactions || []);
 
   const visibleReactions = [
@@ -115,6 +119,14 @@ export default function UpdateCard({ update, auth, onUpdated, onDeleted }) {
     setEditText(update.text);
     setEditStatus(update.status);
   }, [update._id, update.text, update.status]);
+
+
+  useEffect(() => {
+    if (!update.author?._id) return;
+    getStreak(update.author._id, auth?.token)
+      .then((data) => setStreak(data.streak))
+      .catch(() => setStreak(null));
+  }, [update.author?._id]);
 
   async function handleReactionToggle(emoji) {
     if (!auth) return;
@@ -253,9 +265,21 @@ export default function UpdateCard({ update, auth, onUpdated, onDeleted }) {
             </svg>
           </span>
           <div className="update-meta">
-            <span className="author">
+            <div className="author">
+            <span>
               {update.author?.displayName || "Unknown"}
-            </span>
+              </span>
+              {streak > 0 && (
+                <span
+                  className="streak"
+                  aria-label={`${streak}-day streak`}
+                  title={`${streak}-day posting streak`}
+                >
+                  <Flame size={14} strokeWidth={2.5} aria-hidden="true" />
+                  {streak}
+                </span>
+              )}
+            </div>
             <div className="update-meta-subinfo">
               <time dateTime={update.createdAt}>
                 {formatRelativeTime(update.createdAt)}

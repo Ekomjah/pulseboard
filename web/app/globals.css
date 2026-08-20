@@ -24,6 +24,8 @@
   --reaction-button-text: #1a1a2e;
   --focus-indicator: #4b5efc;
   --mention-text: #4b5efc;
+  --streak-text: #c2410c;
+  --streak-bg: rgba(249, 115, 22, 0.14);
 }
 
 :root[data-theme="dark"] {
@@ -339,11 +341,6 @@ section {
   color: var(--text-hint);
   font-size: 18px;
   font-weight: 600;
-}
-
-.author {
-  font-weight: bold;
-  font-size: 1rem;
 }
 
 .initials-badge {
@@ -711,12 +708,41 @@ section {
 }
 
 .pin-btn.is-pinned:hover:not(:disabled) {
-  background-color: #fde68a; 
+  background-color: #fde68a;
   border-color: #fbbf24;
 }
 
 .pin-btn:disabled {
   cursor: default;
-  border-color: transparent; 
+  border-color: transparent;
   opacity: 0.9;
+}
+
+.author {
+  display: grid;
+  grid-template-columns: 1fr auto; /* name | flexible gap | streak */
+  align-items: baseline;
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+.streak {
+  display: inline-flex;
+  align-items: center;
+  align-self: center;
+  gap: 0.25rem;
+  padding: 0.15rem 0.5rem 0.15rem 0.3rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--streak-text);
+  background: var(--streak-bg);
+  white-space: nowrap;
+  margin-left: 1rem;
+}
+
+.streak svg {
+  flex-shrink: 0;
+  color: var(--streak-text);
 }

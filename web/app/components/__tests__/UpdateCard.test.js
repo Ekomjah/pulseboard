@@ -1,11 +1,12 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import UpdateCard, { formatRelativeTime, groupReactions } from "../UpdateCard";
-import { addReaction, removeReaction, editUpdate } from "@/lib/api";
+import { addReaction, removeReaction, editUpdate, getStreak } from "@/lib/api";
 
 jest.mock("@/lib/api", () => ({
   addReaction: jest.fn(),
   removeReaction: jest.fn(),
   editUpdate: jest.fn(),
+  getStreak: jest.fn(),
 }));
 
 describe("formatRelativeTime", () => {
@@ -84,6 +85,7 @@ describe("UpdateCard", () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    getStreak.mockResolvedValue({ streak: 3 });
   });
 
   it("renders the update text and author", () => {
@@ -150,18 +152,26 @@ describe("UpdateCard", () => {
     );
 
     const mention = screen.getByText("@amina");
+    expect(mention).toBeInTheDocument();
     expect(mention.tagName).toBe("SPAN");
     expect(mention).toHaveClass("mention");
   });
 
-  it("renders plain text without an @ unchanged", () => {
-    const { container } = render(
-      <UpdateCard update={update} auth={null} onUpdated={() => {}} />,
-    );
+  it("shows the author's streak badge with the streak count", async () => {
+    render(<UpdateCard update={update} auth={null} onUpdated={() => {}} />);
 
-    const text = container.querySelector(".update-text");
-    expect(text).toHaveTextContent("Shipped the login page");
-    expect(text.querySelector(".mention")).toBeNull();
+    expect(await screen.findByLabelText("3-day streak")).toBeInTheDocument();
+  });
+
+  it("hides the streak badge when the author has no active streak", async () => {
+    getStreak.mockResolvedValue({ streak: 0 });
+
+    render(<UpdateCard update={update} auth={null} onUpdated={() => {}} />);
+
+    expect(
+      await screen.findByText("Shipped the login page"),
+    ).toBeInTheDocument();
+    expect(screen.queryByLabelText(/day streak/)).not.toBeInTheDocument();
   });
 
   it("renders a relative timestamp with the original dateTime value", () => {

@@ -1,7 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Flame } from "lucide-react";
+import {
+  CircleArrowRight,
+  CircleCheck,
+  CircleX,
+  Flame,
+  Pencil,
+  Trash2,
+} from "lucide-react";
 import { getStreak } from "@/lib/api";
 
 import {
@@ -21,9 +28,9 @@ const STATUS_LABELS = {
 };
 
 const STATUS_ICONS = {
-  "on-track": "→",
-  blocked: "✕",
-  done: "✓",
+  "on-track": CircleArrowRight,
+  blocked: CircleX,
+  done: CircleCheck,
 };
 
 const MS_PER_MINUTE = 60 * 1000;
@@ -126,7 +133,7 @@ export default function UpdateCard({ update, auth, onUpdated, onDeleted }) {
     getStreak(update.author._id, auth?.token)
       .then((data) => setStreak(data.streak))
       .catch(() => setStreak(null));
-  }, [update.author?._id]);
+  }, [update.author?._id,auth?.token]);
 
   async function handleReactionToggle(emoji) {
     if (!auth) return;
@@ -312,7 +319,10 @@ export default function UpdateCard({ update, auth, onUpdated, onDeleted }) {
         ) : (
           <span className={`status-badge status-${update.status}`}>
             <span className="status-icon" aria-hidden="true">
-              {STATUS_ICONS[update.status]}
+              {(() => {
+                const Icon = STATUS_ICONS[update.status];
+                return Icon ? <Icon size={14} strokeWidth={2.5} /> : null;
+              })()}
             </span>
             {STATUS_LABELS[update.status] || update.status}
           </span>

@@ -15,6 +15,7 @@ import {
   editUpdate,
   removeReaction,
   getStreak,
+  togglePin,
 } from "@/lib/api";
 
 const REACTION_OPTIONS = ["👍", "🎉", "❤️", "🚀"];
@@ -161,6 +162,26 @@ export default function UpdateCard({ update, auth, onUpdated, onDeleted }) {
     } catch (err) {
       setError(err.message);
     }
+  }
+
+  async function handleTogglePin() {
+    if (!auth) return;
+
+    setError(null);
+
+    try {
+
+      const { update: updated } = await togglePin({ updateId: update._id, pinned: !update.pinned }, auth.token);
+
+      if (!updated) {
+        setError("Failed to pin the update. Please try again.");
+      }
+
+      onUpdated(updated);
+    } catch (err) {
+      setError(err.message);
+    }
+
   }
 
   async function handleDelete() {
@@ -381,6 +402,16 @@ export default function UpdateCard({ update, auth, onUpdated, onDeleted }) {
               </button>
             )}
           </>
+        )}
+        {(auth?.user?.role === "LEAD" || update.pinned) && (
+          <button
+            className={`pin-btn ${update.pinned ? "is-pinned" : ""}`}
+            type="button"
+            onClick={handleTogglePin}
+            disabled={auth?.user?.role !== "LEAD"}
+          >
+            {update.pinned ? "Pinned" : "Pin"}
+          </button>
         )}
       </footer>
       {error && <p className="error">{error}</p>}

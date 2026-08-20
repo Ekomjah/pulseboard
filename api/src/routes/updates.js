@@ -107,36 +107,37 @@ router.get("/", optionalAuth, async (req, res) => {
 
     let updates;
 
-    if (sort === "most-reactions") {
-      updates = await Update.aggregate([
-        { $match: filter },
-        {
-          $addFields: {
-            reactionCount: { $size: "$reactions" },
-          },
-        },
-        {
-          $sort: {
-            reactionCount: -1,
-            createdAt: -1,
-          },
-        },
-        { $skip: (page - 1) * limit },
-        { $limit: limit },
-      ]);
+if (sort === "most-reactions") {
+  updates = await Update.aggregate([
+    { $match: filter },
+    {
+      $addFields: {
+        reactionCount: { $size: "$reactions" },
+      },
+    },
+    {
+      $sort: {
+        pinned: -1,
+        reactionCount: -1,
+        createdAt: -1,
+      },
+    },
+    { $skip: (page - 1) * limit },
+    { $limit: limit },
+  ]);
 
-      await Update.populate(updates, [
-        { path: "author", select: "displayName email" },
-        { path: "reactions.user", select: "displayName email" },
-      ]);
-    } else {
-      updates = await Update.find(filter)
-        .sort({ createdAt: sortDirection })
-        .skip((page - 1) * limit)
-        .limit(limit)
-        .populate("author", "displayName email")
-        .populate("reactions.user", "displayName email");
-    }
+  await Update.populate(updates, [
+    { path: "author", select: "displayName email" },
+    { path: "reactions.user", select: "displayName email" },
+  ]);
+} else {
+  updates = await Update.find(filter)
+    .sort({ pinned: -1, createdAt: sortDirection })
+    .skip((page - 1) * limit)
+    .limit(limit)
+    .populate("author", "displayName email")
+    .populate("reactions.user", "displayName email");
+}
     const total = await Update.countDocuments(filter);
     const hasNextPage = page * limit < total;
     return res.json({
@@ -413,13 +414,30 @@ router.patch("/:id", requireAuth, async (req, res) => {
   }
 });
 
-router.delete(
-  "/:id",
-  requireAuth,
-  checkRole("LEAD", "MEMBER"),
-  async (req, res) => {
-    try {
-      const update = await Update.findById(req.params.id);
+router.patch("/:id/pin", requireAuth, checkRole("LEAD"), async (req, res) => {
+  try {
+    const { pinned } = req.body;
+    const update = await Update.findById(req.params.id);
+
+    if (!update)
+      return res.status(404).json({ error: "Update not found" });
+
+    update.pinned = pinned;
+    await update.save();
+
+    const populated = await update
+      .populate("author", "displayName email");
+
+    return res.status(200).json({ update: populated });
+
+  } catch (err) {
+    return res.status(400).json({ error: "Invalid update id" });
+  }
+});
+
+router.delete("/:id", requireAuth, checkRole("LEAD", "MEMBER"), async (req, res) => {
+  try {
+    const update = await Update.findById(req.params.id);
 
       if (!update) {
         return res.status(404).json({ error: "Update not found" });

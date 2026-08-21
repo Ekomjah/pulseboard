@@ -113,6 +113,7 @@ export default function UpdateCard({
   const [editText, setEditText] = useState(update.text);
   const [editStatus, setEditStatus] = useState(update.status);
   const [saving, setSaving] = useState(false);
+  const [isCopied, setIsCopied] = useState(false);
   const reactionGroups = groupReactions(update.reactions || []);
 
   const visibleReactions = [
@@ -225,6 +226,18 @@ export default function UpdateCard({
     } finally {
       setSaving(false);
     }
+  }
+  async function handleCopyButton() {
+    const URL = process.env.NEXT_PUBLIC_URL || "http://localhost:3000";
+    navigator.clipboard.writeText(URL + "/updates/" + update._id).then(
+      () => {
+        setIsCopied(true);
+      },
+      () => {
+        alert("Something went wrong when copying to clipboard!");
+      },
+    );
+    setTimeout(() => setIsCopied(false), 5000);
   }
 
   function getAuthorInitials(update) {
@@ -350,6 +363,25 @@ export default function UpdateCard({
             );
           })}
         </div>
+        {isCopied ? (
+          <button
+            type="button"
+            title="Copy this update's link"
+            className="copied-link-button"
+            onClick={() => handleCopyButton()}
+          >
+            Link Copied
+          </button>
+        ) : (
+          <button
+            type="button"
+            title="Copy this update's link"
+            className="copy-link-button"
+            onClick={() => handleCopyButton()}
+          >
+            Copy Link
+          </button>
+        )}
         {isEditing ? (
           <div className="edit-actions">
             <button

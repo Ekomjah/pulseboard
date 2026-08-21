@@ -1,13 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import {
-  CircleArrowRight,
-  CircleCheck,
-  CircleX,
-  Flame
-} from "lucide-react";
-import { getStreak } from "@/lib/api";
+import { CircleArrowRight, CircleCheck, CircleX, Flame } from "lucide-react";
 
 import {
   addReaction,
@@ -107,13 +101,18 @@ export function renderWithMentions(text) {
   return nodes;
 }
 
-export default function UpdateCard({ update, auth, onUpdated, onDeleted,streak }) {
+export default function UpdateCard({
+  update,
+  auth,
+  onUpdated,
+  onDeleted,
+  streak,
+}) {
   const [error, setError] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [editText, setEditText] = useState(update.text);
   const [editStatus, setEditStatus] = useState(update.status);
   const [saving, setSaving] = useState(false);
-  const [streak, setStreak] = useState(null);
   const reactionGroups = groupReactions(update.reactions || []);
 
   const visibleReactions = [

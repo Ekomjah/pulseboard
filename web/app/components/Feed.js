@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { listUpdates } from "@/lib/api";
+import { listUpdates, getStreak } from "@/lib/api";
 import UpdateCard from "./UpdateCard";
 
 const STATUS_OPTIONS = ["on-track", "blocked", "done"];
@@ -27,6 +27,8 @@ export default function Feed({ auth, refreshToken, socket }) {
   const [showMyUpdates, setShowMyUpdates] = useState(false);
   const [showJumpToTop, setShowJumpToTop] = useState(false);
 
+  const [streak, setStreak] = useState(null);
+
   // Jump-to-top button
   useEffect(() => {
     function handleScroll() {
@@ -42,12 +44,35 @@ export default function Feed({ auth, refreshToken, socket }) {
   }, []);
 
   useEffect(() => {
-    if (!update.author?._id) return;
-    getStreak(update.author._id, auth?.token)
-      .then((data) => setStreak(data.streak))
-      .catch(() => setStreak(null));
-  }, [update.author?._id, auth?.token]);
+    console.log("effect fired, updates.length:", updates);
+    const set = new Set();
+    const streakResults = async () => {
+      const results = await Promise.all(
+        updates.map(async (update) => {
+          if (!update.author?._id) return;
+          const streak = await getStreak(update.author._id, auth?.token);
+          console.log({ userId: update.author._id, streak: streak?.streak });
+          return { userId: update.author._id, streak: streak?.streak };
+        }),
+      );
 
+      const sanitizedResult = results
+        .filter(Boolean)
+        .filter(
+          (obj, index, self) =>
+            index === self.findIndex((o) => o.userId === obj.userId),
+        );
+
+      console.log("sanitizedResult", sanitizedResult);
+
+      const streakMap = Object.fromEntries(
+        sanitizedResult.map((obj) => Object.values(obj)),
+      );
+
+      setStreak(streakMap);
+    };
+    streakResults();
+  }, [updates, auth?.token]);
 
   // Load the current feed
   //* Attach and detach event handlers for websocket (if initialized)
@@ -342,6 +367,7 @@ export default function Feed({ auth, refreshToken, socket }) {
             auth={auth}
             onUpdated={handleUpdated}
             onDeleted={handleDeleted}
+            streak={streak[update?.author?._id]}
           />
         ))}
       </div>

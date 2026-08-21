@@ -44,14 +44,12 @@ export default function Feed({ auth, refreshToken, socket }) {
   }, []);
 
   useEffect(() => {
-    console.log("effect fired, updates.length:", updates);
     const set = new Set();
     const streakResults = async () => {
       const results = await Promise.all(
         updates.map(async (update) => {
           if (!update.author?._id) return;
           const streak = await getStreak(update.author._id, auth?.token);
-          console.log({ userId: update.author._id, streak: streak?.streak });
           return { userId: update.author._id, streak: streak?.streak };
         }),
       );
@@ -62,9 +60,6 @@ export default function Feed({ auth, refreshToken, socket }) {
           (obj, index, self) =>
             index === self.findIndex((o) => o.userId === obj.userId),
         );
-
-      console.log("sanitizedResult", sanitizedResult);
-
       const streakMap = Object.fromEntries(
         sanitizedResult.map((obj) => Object.values(obj)),
       );

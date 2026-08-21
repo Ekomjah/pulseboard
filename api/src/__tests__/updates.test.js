@@ -1472,7 +1472,6 @@ test("GET /api/users/:id/streak returns correct streak", async () => {
   await createUpdateOnDay(user._id, 2); // day before
 
   const res = await request(app).get(`/api/users/${user._id}/streak`);
-  console.log(res.body);
   expect(res.status).toBe(200);
   expect(res.body.streak).toBe(3);
 });

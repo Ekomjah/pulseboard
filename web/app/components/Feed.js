@@ -3,6 +3,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { listUpdates, getStreak } from "@/lib/api";
 import UpdateCard from "./UpdateCard";
+import { MoveUp } from "lucide-react";
+
 
 const STATUS_OPTIONS = ["on-track", "blocked", "done"];
 
@@ -421,7 +423,8 @@ export default function Feed({ auth, refreshToken, socket }) {
           onClick={handleJumpToTop}
           aria-label="Jump to top"
         >
-          ↑ Top
+          <MoveUp size={16} strokeWidth={3} />
+          <span>Top</span>
         </button>
       )}
     </div>

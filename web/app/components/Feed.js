@@ -41,6 +41,14 @@ export default function Feed({ auth, refreshToken, socket }) {
     };
   }, []);
 
+  useEffect(() => {
+    if (!update.author?._id) return;
+    getStreak(update.author._id, auth?.token)
+      .then((data) => setStreak(data.streak))
+      .catch(() => setStreak(null));
+  }, [update.author?._id, auth?.token]);
+
+
   // Load the current feed
   //* Attach and detach event handlers for websocket (if initialized)
   useEffect(() => {

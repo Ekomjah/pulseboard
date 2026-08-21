@@ -5,9 +5,7 @@ import {
   CircleArrowRight,
   CircleCheck,
   CircleX,
-  Flame,
-  Pencil,
-  Trash2,
+  Flame
 } from "lucide-react";
 import { getStreak } from "@/lib/api";
 
@@ -109,7 +107,7 @@ export function renderWithMentions(text) {
   return nodes;
 }
 
-export default function UpdateCard({ update, auth, onUpdated, onDeleted }) {
+export default function UpdateCard({ update, auth, onUpdated, onDeleted,streak }) {
   const [error, setError] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [editText, setEditText] = useState(update.text);
@@ -126,13 +124,6 @@ export default function UpdateCard({ update, auth, onUpdated, onDeleted }) {
     setEditText(update.text);
     setEditStatus(update.status);
   }, [update._id, update.text, update.status]);
-
-  useEffect(() => {
-    if (!update.author?._id) return;
-    getStreak(update.author._id, auth?.token)
-      .then((data) => setStreak(data.streak))
-      .catch(() => setStreak(null));
-  }, [update.author?._id, auth?.token]);
 
   async function handleReactionToggle(emoji) {
     if (!auth) return;

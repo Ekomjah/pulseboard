@@ -5,7 +5,6 @@ import { listUpdates, getStreak } from "@/lib/api";
 import UpdateCard from "./UpdateCard";
 import { MoveUp } from "lucide-react";
 
-
 const STATUS_OPTIONS = ["on-track", "blocked", "done"];
 
 export default function Feed({ auth, refreshToken, socket }) {
@@ -30,7 +29,32 @@ export default function Feed({ auth, refreshToken, socket }) {
   const [showMyUpdates, setShowMyUpdates] = useState(false);
   const [showJumpToTop, setShowJumpToTop] = useState(false);
 
-  const [streak, setStreak] = useState(null);
+  const [streak, setStreak] = useState(new Map());
+
+
+  const authors = useMemo(() => {
+    const map = new Map();
+
+    for (const update of allUpdates) {
+      if (update.author?._id) {
+        map.set(update.author._id, update.author.displayName);
+      }
+    }
+
+    return Array.from(map.entries());
+  }, [allUpdates]);
+
+  const tags = useMemo(() => {
+    const tagsArray = [];
+
+    for (const update of allUpdates) {
+      tagsArray.push(...(update.tags ?? []));
+    }
+
+    return [...new Set(tagsArray)];
+  }, [allUpdates]);
+
+  const authorIds = useMemo(() => authors.map(([id]) => id), [authors]);
 
   // Jump-to-top button
   useEffect(() => {
@@ -46,33 +70,30 @@ export default function Feed({ auth, refreshToken, socket }) {
     };
   }, []);
 
+
   useEffect(() => {
-    const set = new Set();
-    const streakResults = async () => {
+    if (authorIds.length === 0) return;
+
+    let cancelled = false;
+
+    async function fetchAllStreaks() {
       const results = await Promise.all(
-        updates.map(async (update) => {
-          if (!update.author?._id) return;
-          const streak = await getStreak(update.author._id, auth?.token);
-          return { userId: update.author._id, streak: streak?.streak };
-        }),
+        authorIds.map(async (id) => {
+          const streak = await getStreak(id, auth?.token);
+          return [id, streak?.streak];
+        })
       );
 
-      const sanitizedResult = results
-        .filter(Boolean)
-        .filter(
-          (obj, index, self) =>
-            index === self.findIndex((o) => o.userId === obj.userId),
-        );
-      const streakMap = Object.fromEntries(
-        sanitizedResult.map((obj) => Object.values(obj)),
-      );
+      console.log("map example", new Map(results))
+      if (!cancelled) {
+        setStreak(new Map(results));
+      }
+    }
 
-      setStreak(streakMap);
-    };
-    streakResults();
-  }, [updates, auth?.token]);
+    fetchAllStreaks();
+    return () => { cancelled = true; };
+  }, [authorIds,auth?.token]);
 
-  // Load the current feed
   //* Attach and detach event handlers for websocket (if initialized)
   useEffect(() => {
     if (!socket) return;
@@ -185,28 +206,6 @@ export default function Feed({ auth, refreshToken, socket }) {
       setLoadingMore(false);
     }
   }
-
-  const authors = useMemo(() => {
-    const map = new Map();
-
-    for (const update of allUpdates) {
-      if (update.author?._id) {
-        map.set(update.author._id, update.author.displayName);
-      }
-    }
-
-    return Array.from(map.entries());
-  }, [allUpdates]);
-
-  const tags = useMemo(() => {
-    const tagsArray = [];
-
-    for (const update of allUpdates) {
-      tagsArray.push(...(update.tags ?? []));
-    }
-
-    return [...new Set(tagsArray)];
-  }, [allUpdates]);
 
   //* Handler for incoming POST:update event on websocket
   function handleRcvdUpdate(update) {
@@ -405,7 +404,7 @@ export default function Feed({ auth, refreshToken, socket }) {
             auth={auth}
             onUpdated={handleUpdated}
             onDeleted={handleDeleted}
-            streak={streak[update?.author?._id]}
+            streak={streak.get(update?.author?._id)}
           />
         ))}
       </div>

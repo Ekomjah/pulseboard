@@ -31,7 +31,6 @@ export default function Feed({ auth, refreshToken, socket }) {
 
   const [streak, setStreak] = useState(new Map());
 
-
   const authors = useMemo(() => {
     const map = new Map();
 
@@ -70,7 +69,6 @@ export default function Feed({ auth, refreshToken, socket }) {
     };
   }, []);
 
-
   useEffect(() => {
     if (authorIds.length === 0) return;
 
@@ -81,18 +79,22 @@ export default function Feed({ auth, refreshToken, socket }) {
         authorIds.map(async (id) => {
           const streak = await getStreak(id, auth?.token);
           return [id, streak?.streak];
-        })
+        }),
       );
 
-      console.log("map example", new Map(results))
       if (!cancelled) {
         setStreak(new Map(results));
       }
     }
-
-    fetchAllStreaks();
-    return () => { cancelled = true; };
-  }, [authorIds,auth?.token]);
+    try {
+      fetchAllStreaks();
+    } catch (err) {
+      return { message: err ? err : "An unknown error occured" };
+    }
+    return () => {
+      cancelled = true;
+    };
+  }, [authorIds, auth?.token]);
 
   //* Attach and detach event handlers for websocket (if initialized)
   useEffect(() => {
